@@ -141,8 +141,30 @@
                     type: 'GET',
                     url: `/departments/${departmentId}`,
                     success: function (response) {
-                        $('#update-form #branch').val(response.branch_id).change();
-                        $('#update-form #description').val(response.description);
+
+                        let department = response;
+                        let isArchived = department.branch.deleted_at !== null;
+
+                        $.ajax({
+                            type: 'GET',
+                            url: `/branches/all`,
+                            success: function (response) {
+                                $('#update-form #branch').empty();
+
+                                response.forEach(branch => {
+                                    $('#update-form #branch').append(`<option value="${branch.id}">${branch.description}</option>`)
+                                });
+
+                                $('#update-form #description').val(department.description);
+
+                                $('#update-form #branch').val(department.branch_id).change();
+
+                                if (isArchived) {
+                                    $('#update-form #branch').append(`<option selected value="" disabled>${department.branch.description}</option>`)
+                                }
+                            }
+                        })
+                        //
                     },
                     error: function (xhr) {
                         handleError(xhr);

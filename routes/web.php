@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/document-management', [DocumentManagementController::class, 'index'])->name('document_management.index');
 
+    Route::get('/branches/all', [BranchController::class, 'all']);
     Route::apiResource('branches', BranchController::class);
     Route::apiResource('departments', DepartmentController::class);
 });

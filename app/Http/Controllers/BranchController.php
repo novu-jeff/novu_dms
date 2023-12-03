@@ -12,6 +12,12 @@ use Yajra\DataTables\Facades\DataTables;
 
 class BranchController extends Controller
 {
+    public function all()
+    {
+        $branches = Branch::all();
+        return response()->json($branches);
+    }
+
     public function index()
     {
         if(request()->ajax()) {
