@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\BranchController;
+use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DocumentManagementController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 Auth::routes();
@@ -31,4 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::put('profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 
     Route::get('/document-management', [DocumentManagementController::class, 'index'])->name('document_management.index');
+
+    Route::apiResource('branches', BranchController::class);
+    Route::apiResource('departments', DepartmentController::class);
 });

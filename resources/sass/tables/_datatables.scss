@@ -171,3 +171,11 @@
 	content: " ";
 	display: table;
 }
+
+.dataTables_info, .dataTables_paginate {
+    margin-top: 1.4rem !important;
+}
+
+#table_length, #table_filter {
+    margin-bottom: 1.5rem !important;
+}

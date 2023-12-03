@@ -35,32 +35,32 @@ $gray: #5d657b;
 $gray-2: #c2cbd6;
 
 // ======== primary color
-$primary: #2f80ed;
+$primary: #2f80ed !default;
 
 // ======== secondary color
-$secondary: #00c1f8;
+$secondary: #00c1f8 !default;
 
 // ======== success color
-$success: #219653;
+$success: #219653 !default;
 
 // ======== danger color
-$danger: #d50100;
+$danger: #d50100 !default;
 
 // ======== warning color
-$warning: #f7c800;
+$warning: #f7c800 !default;
 
 // ======== info color
-$info: #97ca31;
+$info: #97ca31 !default;
 
 // ======== purple color
-$purple: #9b51e0;
+$purple: #9b51e0 !default;
 
 // ======== light color
-$light: #efefef;
-$light-2: #e5e5e5;
+$light: #efefef !default;
+$light-2: #e5e5e5 !default;
 
 // ======== active color
-$active: #2f80ed;
+$active: #2f80ed !default;
 
 // ======== deactive color
 $deactive: #cbe1ff;
