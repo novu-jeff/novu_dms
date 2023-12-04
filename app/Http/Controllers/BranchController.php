@@ -14,14 +14,14 @@ class BranchController extends Controller
 {
     public function all()
     {
-        $branches = Branch::all();
+        $branches = Branch::where('status', 1)->get();
         return response()->json($branches);
     }
 
     public function index()
     {
         if(request()->ajax()) {
-            $branches = Branch::withTrashed();
+            $branches = Branch::query();
             return (new BaseService($branches))->dataTable();
         }
 
@@ -73,19 +73,18 @@ class BranchController extends Controller
         }
     }
 
-    public function destroy($id)
+    public function destroy(Branch $branch)
     {
         DB::beginTransaction();
-        $branch = Branch::withTrashed()->find($id);
         try {
 
-            if ($branch->trashed()) {
+            if ($branch->status == 0) {
                 // If the branch is soft-deleted, restore it
-                $branch->restore();
+                $branch->update(['status' => 1]);
                 $message = 'Branch restored successfully';
             } else {
                 // If the branch is not soft-deleted, soft delete it
-                $branch->delete();
+                $branch->update(['status' => 0]);
                 $message = 'Branch deleted successfully';
             }
 

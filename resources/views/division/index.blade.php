@@ -6,7 +6,7 @@
         <div class="d-flex justify-content-between align-items-center">
             <div>
                 <div class="title mb-30">
-                    <h2>{{ __('Department Management') }}</h2>
+                    <h2>{{ __('Division Management') }}</h2>
                 </div>
             </div>
             <div>
@@ -34,7 +34,7 @@
                                     <tr>
                                         <th><h6>No.</h6></th>
                                         <th><h6>Description</h6></th>
-                                        <th><h6>Branch</h6></th>
+                                        <th><h6>Department</h6></th>
                                         <th><h6>Added Date</h6></th>
                                         <th><h6>Status</h6></th>
                                         <th><h6>Action</h6></th>
@@ -53,8 +53,8 @@
         <!-- end row -->
     </div>
 
-    @include('department.modals.create')
-    @include('department.modals.edit')
+    @include('division.modals.create')
+    @include('division.modals.edit')
 @endsection
 @section('scripts')
     <script>
@@ -64,14 +64,14 @@
                 ajax: {
                     processing: true,
                     serverSide: true,
-                    url: '/departments',
+                    url: '/divisions',
                     type: 'GET',
                     "order": [[1,'desc']]
                 },
                 columns: [
                     { data: 'DT_RowIndex', name: 'DT_RowIndex', searchable: false, orderable: true },
                     { data: 'description', name: 'description' },
-                    { data: 'branch', name: 'branch' },
+                    { data: 'department', name: 'department' },
                     { data: 'created_at', name: 'created_at' },
                     { data: 'status', name: 'status', searchable: false, orderable: false },
                     { data: 'actions', searchable: false, orderable: false },
@@ -113,7 +113,7 @@
                 // Perform the Ajax request
                 $.ajax({
                     type: 'POST',
-                    url: '/departments',
+                    url: '/divisions',
                     data: formData,
                     success: function (response) {
                         Swal.fire({
@@ -131,36 +131,36 @@
                 });
             });
 
-            let departmentId;
+            let divisionId;
 
             $('html').on('click', '#edit-button', function () {
 
-                departmentId = $(this).attr('data-id');
+                divisionId = $(this).attr('data-id');
 
                 $.ajax({
                     type: 'GET',
-                    url: `/departments/${departmentId}`,
+                    url: `/divisions/${divisionId}`,
                     success: function (response) {
 
-                        let department = response;
-                        let isArchived = department.branch.status !== 1;
+                        let division = response;
+                        let isArchived = division.department.status !== 1;
 
                         $.ajax({
                             type: 'GET',
-                            url: `/branches/all`,
+                            url: `/departments/all`,
                             success: function (response) {
-                                $('#update-form #branch').empty();
+                                $('#update-form #department').empty();
 
-                                response.forEach(branch => {
-                                    $('#update-form #branch').append(`<option value="${branch.id}">${branch.description}</option>`)
+                                response.forEach(department => {
+                                    $('#update-form #department').append(`<option value="${department.id}">${department.description}</option>`)
                                 });
 
-                                $('#update-form #description').val(department.description);
+                                $('#update-form #description').val(division.description);
 
-                                $('#update-form #branch').val(department.branch_id).change();
+                                $('#update-form #department').val(division.department_id).change();
 
                                 if (isArchived) {
-                                    $('#update-form #branch').append(`<option selected value="" disabled>${department.branch.description}</option>`)
+                                    $('#update-form #department').append(`<option selected value="" disabled>${division.department.description}</option>`)
                                 }
                             }
                         })
@@ -179,7 +179,7 @@
                 // Perform the Ajax request
                 $.ajax({
                     type: 'POST',
-                    url: '/departments/' + departmentId,
+                    url: '/divisions/' + divisionId,
                     data: formData,
                     success: function (response) {
                         Swal.fire({
@@ -200,7 +200,7 @@
             // Delete record
             $('html').on('click', '#delete-button', function () {
 
-                departmentId = $(this).attr('data-id');
+                divisionId = $(this).attr('data-id');
 
                 Swal.fire({
                     title: "Are you sure?",
@@ -215,7 +215,7 @@
                         // Perform delete request
                         $.ajax({
                             type: 'DELETE',
-                            url: '/departments/' + departmentId, // Change the URL to match your Laravel route
+                            url: '/divisions/' + divisionId, // Change the URL to match your Laravel route
                             success: function (response) {
                                 Swal.fire({
                                     title: "Success!",

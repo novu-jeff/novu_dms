@@ -12,10 +12,16 @@ use Yajra\DataTables\Facades\DataTables;
 
 class DepartmentController extends Controller
 {
+    public function all()
+    {
+        $departments = Department::where('status', 1)->get();
+        return response()->json($departments);
+    }
+
     public function index()
     {
         if(request()->ajax()) {
-            $departments = Department::with('branch')->withTrashed();
+            $departments = Department::with('branch');
 
             $additionalColumns = [
                 [
@@ -30,7 +36,7 @@ class DepartmentController extends Controller
                 ->dataTable($additionalColumns);
         }
 
-        $branches = Branch::all();
+        $branches = Branch::where('status', 1)->get();
         return view('department.index', compact('branches'));
     }
 
@@ -88,19 +94,16 @@ class DepartmentController extends Controller
         }
     }
 
-    public function destroy($id)
+    public function destroy(Department $department)
     {
         DB::beginTransaction();
-        $department = Department::withTrashed()->find($id);
         try {
 
-            if ($department->trashed()) {
-                // If the branch is soft-deleted, restore it
-                $department->restore();
+            if ($department->status == 0) {
+                $department->update(['status' => 1]);
                 $message = 'Department restored successfully';
             } else {
-                // If the branch is not soft-deleted, soft delete it
-                $department->delete();
+                $department->update(['status' => 0]);
                 $message = 'Department deleted successfully';
             }
 

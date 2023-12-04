@@ -2,7 +2,10 @@
 
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\DocumentManagementController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,14 +30,20 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::middleware('auth')->group(function () {
     Route::view('about', 'about')->name('about');
 
-    Route::get('users', [\App\Http\Controllers\UserController::class, 'index'])->name('users.index');
+    Route::get('users', [UserController::class, 'index'])->name('users.index');
 
-    Route::get('profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
-    Route::put('profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
 
     Route::get('/document-management', [DocumentManagementController::class, 'index'])->name('document_management.index');
 
     Route::get('/branches/all', [BranchController::class, 'all']);
+
     Route::apiResource('branches', BranchController::class);
+
+    Route::get('/departments/all', [DepartmentController::class, 'all']);
     Route::apiResource('departments', DepartmentController::class);
+
+    Route::apiResource('divisions', DivisionController::class);
+
 });
