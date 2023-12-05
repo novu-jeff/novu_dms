@@ -17,7 +17,7 @@
 <aside class="sidebar-nav-wrapper">
     <div class="navbar-logo">
         <a href="{{ route('home') }}">
-            <img src="{{ asset('images/logo/logo.svg') }}" alt="logo"/>
+            <img src="{{ asset('images/logo/dms_logo.png') }}" width="100" alt="logo"/>
         </a>
     </div>
     <nav class="sidebar-nav">

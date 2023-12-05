@@ -5,6 +5,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\DocumentManagementController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SectionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -44,6 +45,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/departments/all', [DepartmentController::class, 'all']);
     Route::apiResource('departments', DepartmentController::class);
 
+    Route::get('/get-division-by-department/{departmentId}', [DivisionController::class, 'getDivisionByDepartment']);
     Route::apiResource('divisions', DivisionController::class);
+
+    Route::get('/sections/all', [SectionController::class, 'all']);
+    Route::apiResource('sections', SectionController::class);
 
 });

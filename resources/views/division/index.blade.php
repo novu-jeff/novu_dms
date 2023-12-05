@@ -1,8 +1,24 @@
 @extends('layouts.app')
 
 @section('content')
+
+
     <!-- ========== title-wrapper start ========== -->
     <div class="title-wrapper pt-30">
+
+        <div class="breadcrumb-wrapper">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="#0">Location Management</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Division
+                    </li>
+                </ol>
+            </nav>
+        </div>
+
         <div class="d-flex justify-content-between align-items-center">
             <div>
                 <div class="title mb-30">

@@ -7,6 +7,7 @@ use App\Models\Division;
 use App\Service\BaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use function Illuminate\Events\queueable;
 
 class DivisionController extends Controller
 {
@@ -106,5 +107,13 @@ class DivisionController extends Controller
             DB::rollBack();
             return response()->json(['message' => 'Failed to delete division', 'error' => $e->getMessage()], 500);
         }
+    }
+
+    public function getDivisionByDepartment($departmentId)
+    {
+        $division = Division::where('department_id', $departmentId)
+            ->where('status', 1)
+            ->get();
+        return response()->json($division);
     }
 }

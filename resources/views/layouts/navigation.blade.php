@@ -69,7 +69,7 @@
                 <a href="{{ route('divisions.index') }}">Division</a>
             </li>
             <li>
-                <a href="#">Section</a>
+                <a href="{{ route('sections.index') }}">Section</a>
             </li>
         </ul>
     </li>
