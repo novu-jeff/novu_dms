@@ -60,43 +60,4 @@ class DocumentManagementController extends Controller
         }
     }
 
-    public function update(Request $request, Document $document)
-    {
-        // Validate the request data
-        $validatedData = $request->validate([
-            'title' => 'required|max:255',
-            'author' => 'required|max:255',
-            'branch' => 'required|exists:branches,id',
-            'department' => 'required|exists:departments,id',
-            'division' => 'required|exists:divisions,id',
-            'section' => 'required|exists:sections,id',
-            'permission' => 'required|in:1,2,3',
-            'tags' => 'required|string',
-            'folder' => 'required',
-            'file' => 'required',
-        ]);
-
-        $filePath = null;
-        if ($request->hasFile('file')) {
-            $filePath = $validatedData['file']->store($request->folder, 'public');
-        }
-
-        // Update the document with the validated data
-        $document->update([
-            'title' => $validatedData['title'],
-            'author' => $validatedData['author'],
-            'branch_id' => $validatedData['branch'],
-            'department_id' => $validatedData['department'],
-            'division_id' => $validatedData['division'],
-            'section_id' => $validatedData['section'],
-            'permission' => $validatedData['permission'],
-            'tags' => $validatedData['tags'],
-            'folder' => $validatedData['folder'],
-            'file' => $filePath, // Assuming you want to store the file in the 'documents' directory
-        ]);
-
-        // Redirect to the index page or show a success message
-        return redirect('/documents')->with('success', 'Document updated successfully');
-    }
-
 }

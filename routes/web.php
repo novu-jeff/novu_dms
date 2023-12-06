@@ -4,6 +4,7 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\DocumentFinderController;
 use App\Http\Controllers\DocumentManagementController;
 use App\Http\Controllers\FolderController;
 use App\Http\Controllers\ProfileController;
@@ -59,5 +60,9 @@ Route::middleware('auth')->group(function () {
     Route::apiResource('sections', SectionController::class);
 
     Route::apiResource('folders', FolderController::class);
+
+    Route::get('/document-finder', [DocumentFinderController::class, 'index'])->name('document_finder.index');
+    Route::post('/document-finder/download/{document}', [DocumentFinderController::class, 'download'])->name('document_finder.download');
+
 
 });
