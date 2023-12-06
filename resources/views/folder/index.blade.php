@@ -7,10 +7,10 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
-                        <a href="#">Location Management</a>
+                        <a href="#">Dashboard</a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">
-                        Branch
+                        Folder
                     </li>
                 </ol>
             </nav>
@@ -19,12 +19,12 @@
         <div class="d-flex justify-content-between align-items-center">
             <div>
                 <div class="title mb-30">
-                    <h2>{{ __('Branch Management') }}</h2>
+                    <h2>{{ __('Folder Management') }}</h2>
                 </div>
             </div>
             <div>
                 <!-- Button trigger modal -->
-                <button type="button" class="main-btn primary-btn btn-hover w-100 text-center btn-sm" data-bs-toggle="modal" data-bs-target="#addModal">
+                <button type="button" id="openAddModal" class="main-btn primary-btn btn-hover w-100 text-center btn-sm" data-bs-toggle="modal" data-bs-target="#addModal">
                     Add
                     <span class="fs-5">+</span>
                 </button>
@@ -46,8 +46,11 @@
                                     <thead>
                                     <tr>
                                         <th><h6>No.</h6></th>
-                                        <th><h6>Description</h6></th>
-                                        <th><h6>Added Date</h6></th>
+                                        <th><h6>Name</h6></th>
+                                        <th><h6>Branch</h6></th>
+                                        <th><h6>Department</h6></th>
+                                        <th><h6>Division</h6></th>
+                                        <th><h6>Section</h6></th>
                                         <th><h6>Status</h6></th>
                                         <th><h6>Action</h6></th>
                                     </tr>
@@ -65,8 +68,7 @@
         <!-- end row -->
     </div>
 
-    @include('branch.modals.create')
-    @include('branch.modals.edit')
+    @include('folder.modals.create')
 @endsection
 @section('scripts')
     <script>
@@ -76,14 +78,17 @@
                 ajax: {
                     processing: true,
                     serverSide: true,
-                    url: '/branches',
+                    url: '/folders',
                     type: 'GET',
                     "order": [[1,'desc']]
                 },
                 columns: [
                     { data: 'DT_RowIndex', name: 'DT_RowIndex', searchable: false, orderable: true },
-                    { data: 'description', name: 'description' },
-                    { data: 'created_at', name: 'created_at' },
+                    { data: 'name', name: 'name' },
+                    { data: 'branch', name: 'branch' },
+                    { data: 'department', name: 'department' },
+                    { data: 'division', name: 'division' },
+                    { data: 'section', name: 'section' },
                     { data: 'status', name: 'status', searchable: false, orderable: false },
                     { data: 'actions', searchable: false, orderable: false },
                 ]
@@ -113,7 +118,119 @@
 
             let addModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addModal'));
 
-            let updateModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('updateModal'));
+            // Open Modal
+            $('#openAddModal').click(e => {
+
+                $('#add-form-submit').show();
+                $('#update-form-submit').hide();
+
+                $('#modal-title').html('Add Folder');
+
+                $('#division').empty();
+                $('#department').empty();
+                $('#section').empty();
+
+                $('#division').append('<option selected disabled>Choose division</option>');
+                $('#department').append('<option selected disabled>Choose department</option>');
+                $('#section').append('<option selected disabled>Choose section</option>');
+
+                $('#branch').val('').change();
+                $('#department').val('').change();
+                $('#division').val('').change();
+                $('#section').val('').change();
+            })
+
+            // For Select box
+            $('select[name="branch"]').change(e => {
+
+                let branch = e.target.value;
+
+                if(branch === '' || branch == null) return;
+
+                // Reset
+                $('#division').empty();
+                $('#department').empty();
+                $('#section').empty();
+
+                $('#division').append('<option selected disabled>Choose division</option>');
+                $('#department').append('<option selected disabled>Choose department</option>');
+                $('#section').append('<option selected disabled>Choose section</option>');
+
+                $('#department').val('').change();
+                $('#division').val('').change();
+                $('#section').val('').change();
+
+                $.ajax({
+                    type: 'GET',
+                    url: `/get-department-by-branch/${branch}`,
+                    success: function (response) {
+                        let departmentElement = $('#department');
+
+                        departmentElement.empty();
+                        departmentElement.append('<option selected disabled>Choose division</option>');
+
+                        response.forEach(department => {
+                            departmentElement.append(`<option value="${department.id}">${department.description}</option>`)
+                        });
+                    },
+                    error: function (xhr) {
+                        handleError(xhr)
+                    }
+                })
+            });
+
+            $('select[name="department"]').change(e => {
+                let departmentId = e.target.value;
+
+                if(departmentId === '' || departmentId == null) return;
+
+                $.ajax({
+                    type: 'GET',
+                    url: `/get-division-by-department/${departmentId}`,
+                    success: function (response) {
+                        let divisionElement = $('#division');
+
+                        divisionElement.empty();
+                        divisionElement.append('<option selected disabled>Choose division</option>');
+
+                        response.forEach(division => {
+                            divisionElement.append(`<option value="${division.id}">${division.description}</option>`)
+                        });
+                    },
+                    error: function (xhr) {
+                        handleError(xhr)
+                    }
+                })
+            });
+
+            $('select[name="division"]').change(e => {
+                let divisionId = e.target.value;
+                let departmentId = $('#department').val();
+
+                if(divisionId === '' || divisionId == null) return;
+
+                $.ajax({
+                    type: 'GET',
+                    url: `/get-section-by-division-and-department`,
+                    data: {
+                        department: departmentId,
+                        division: divisionId,
+                    },
+                    success: function (response) {
+                        let sectionElement = $('#section');
+
+                        sectionElement.empty();
+                        sectionElement.append('<option selected disabled>Choose section</option>');
+
+                        response.forEach(section => {
+                            sectionElement.append(`<option value="${section.id}">${section.description}</option>`)
+                        });
+                    },
+                    error: function (xhr) {
+                        handleError(xhr)
+                    }
+                })
+            })
 
             // Ajax
             // Add record
@@ -124,7 +241,7 @@
                 // Perform the Ajax request
                 $.ajax({
                     type: 'POST',
-                    url: '/branches',
+                    url: '/folders',
                     data: formData,
                     success: function (response) {
                         Swal.fire({
@@ -142,17 +259,27 @@
                 });
             });
 
-            let branchId;
+            let folderId;
 
             $('html').on('click', '#edit-button', function () {
 
-                branchId = $(this).attr('data-id');
+                folderId = $(this).attr('data-id');
+                $('#add-form-submit').hide();
+                $('#update-form-submit').show();
+                $('#modal-title').html('Update Folder');
 
                 $.ajax({
                     type: 'GET',
-                    url: `/branches/${branchId}`,
+                    url: `/folders/${folderId}`,
                     success: function (response) {
-                        $('#update-form #description').val(response.description);
+
+                        const folder = response;
+                        $('input[name="name"]').val(response.name);
+                        fetchAllBranches(folder.branch.id);
+                        fetchAllDepartmentByBranchId(folder.branch.id, folder.department.id);
+                        fetchAllDivisionByDepartment(folder.department.id, folder.division.id);
+                        fetchAllSectionByDepartmentAndDivision(folder.department.id, folder.division.id, folder.section.id);
+
                     },
                     error: function (xhr) {
                         handleError(xhr);
@@ -167,7 +294,7 @@
                 // Perform the Ajax request
                 $.ajax({
                     type: 'POST',
-                    url: '/branches/' + branchId,
+                    url: '/folders/' + branchId,
                     data: formData,
                     success: function (response) {
                         Swal.fire({
@@ -186,9 +313,9 @@
             });
 
             // Delete record
-            $('html').on('click', '#delete-button', function () {
+             $('html').on('click', '#delete-button', function () {
 
-                branchId = $(this).attr('data-id');
+                folderId = $(this).attr('data-id');
 
                 Swal.fire({
                     title: "Are you sure?",
@@ -203,7 +330,7 @@
                         // Perform delete request
                         $.ajax({
                             type: 'DELETE',
-                            url: '/branches/' + branchId, // Change the URL to match your Laravel route
+                            url: '/folders/' + folderId, // Change the URL to match your Laravel route
                             success: function (response) {
                                 Swal.fire({
                                     title: "Success!",
@@ -211,17 +338,94 @@
                                     icon: "success"
                                 });
                                 addModal.hide();
-                                $('#update-form')[0].reset();
+                                $('#add-form')[0].reset();
                                 dataTable.ajax.reload();
                             },
                             error: function (xhr) {
-                                chandleError(xhr);
+                                handleError(xhr);
                             }
                         });
 
                     }
                 });
-            });
+        });
+
+             const fetchAllBranches = (branchId) => {
+                 $.ajax({
+                     type: 'GET',
+                     url: '/branches/all',
+                     success: function (response) {
+                         $('#branch').empty();
+                         $('#branch').append('<option selected disabled>Choose branch</option>');
+
+                         response.forEach(branch => {
+                             if(branchId === branch.id) {
+                                 $('#branch').append(`<option selected value="${branch.id}">${branch.description}</option>`)
+                             } else {
+                                 $('#branch').append(`<option value="${branch.id}">${branch.description}</option>`)
+                             }
+                         });
+                     }
+                 })
+             }
+
+            const fetchAllDepartmentByBranchId = (branchId, departmentId) => {
+                $.ajax({
+                    type: 'GET',
+                    url: `/get-department-by-branch/${branchId}`,
+                    success: function (response) {
+                        $('#department').empty();
+                        $('#department').append('<option selected disabled>Choose department</option>');
+                        response.forEach(department => {
+                            if(departmentId === department.id) {
+                                $('#department').append(`<option selected value="${department.id}">${department.description}</option>`)
+                            } else {
+                                $('#department').append(`<option value="${department.id}">${department.description}</option>`)
+                            }
+                        });
+                    }
+                });
+            };
+
+            const fetchAllDivisionByDepartment = (departmentId, divisionId) => {
+                $.ajax({
+                    type: 'GET',
+                    url: `/get-division-by-department/${departmentId}`,
+                    success: function (response) {
+                        $('#division').empty();
+                        $('#division').append('<option selected disabled>Choose department</option>');
+                        response.forEach(division => {
+                            if(divisionId === division.id) {
+                                $('#division').append(`<option selected value="${division.id}">${division.description}</option>`)
+                            } else {
+                                $('#division').append(`<option value="${division.id}">${division.description}</option>`)
+                            }
+                        });
+                    }
+                });
+            };
+
+            const fetchAllSectionByDepartmentAndDivision = (departmentId, divisionId, sectionId) => {
+                $.ajax({
+                    type: 'GET',
+                    url: `/get-section-by-division-and-department`,
+                    data: {
+                        department: departmentId,
+                        division: divisionId,
+                    },
+                    success: function (response) {
+                        $('#section').empty();
+                        $('#section').append('<option selected disabled>Choose department</option>');
+                        response.forEach(section => {
+                            if(sectionId === section.id) {
+                                $('#section').append(`<option selected value="${section.id}">${section.description}</option>`)
+                            } else {
+                                $('#section').append(`<option value="${section.id}">${section.description}</option>`)
+                            }
+                        });
+                    }
+                });
+            };
 
         });
     </script>

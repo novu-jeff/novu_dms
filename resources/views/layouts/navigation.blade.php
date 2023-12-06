@@ -25,25 +25,14 @@
         </a>
     </li>
 
-    <li class="nav-item @if(request()->routeIs('users.index')) active @endif">
-        <a href="{{ route('users.index') }}">
-              <span class="icon">
-                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                </svg>
-              </span>
-            <span class="text">{{ __('Users') }}</span>
-        </a>
-    </li>
-
-    <li class="nav-item @if(request()->routeIs('about')) active @endif">
-        <a href="{{ route('about') }}">
+    <li class="nav-item @if(request()->routeIs('folders.index')) active @endif">
+        <a href="{{ route('folders.index') }}">
             <span class="icon">
                 <svg width="22" height="22" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
                     <path d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
                 </svg>
             </span>
-            <span class="text">{{ __('About us') }}</span>
+            <span class="text">{{ __('Folder Management') }}</span>
         </a>
     </li>
 

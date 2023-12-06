@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
+use App\Models\Department;
 use App\Models\Folder;
 use App\Service\BaseService;
 use Carbon\Carbon;
@@ -50,10 +51,11 @@ class FolderController extends Controller
                     },
                 ],
             ];
-            return (new BaseService($folders))->dataTable($additionalColumns);
+            return (new BaseService($folders))->dataTable($additionalColumns, [], '#addModal');
         }
 
-        return view('folder.index');
+        $branches = Branch::where('status', 1)->get();
+        return view('folder.index', compact('branches'));
     }
 
     public function show(Folder $folder)
@@ -65,18 +67,18 @@ class FolderController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'name' => 'required|string|max:255',
             'branch' => 'required',
             'department' => 'required',
             'division' => 'required',
             'section' => 'required',
-            'description' => 'required|string|max:255',
         ]);
 
         DB::beginTransaction();
 
         try {
             $folder = Folder::create([
-                'description' => $request->description,
+                'name' => $request->name,
                 'branch_id' => $request->branch,
                 'department_id' => $request->department,
                 'division_id' => $request->division,
@@ -95,18 +97,18 @@ class FolderController extends Controller
     public function update(Request $request, Folder $folder)
     {
         $request->validate([
+            'name' => 'required|string|max:255',
             'branch' => 'required',
             'department' => 'required',
             'division' => 'required',
             'section' => 'required',
-            'description' => 'required|string|max:255',
         ]);
 
         DB::beginTransaction();
 
         try {
             $folder->update([
-                'description' => $request->description,
+                'name' => $request->name,
                 'branch_id' => $request->branch,
                 'department_id' => $request->department,
                 'division_id' => $request->division,

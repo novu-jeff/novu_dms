@@ -17,7 +17,7 @@ class BaseService
         $this->query = $builder;
     }
 
-    public function dataTable(array $additionalColumns = [], $additionalRawColumns = []): JsonResponse
+    public function dataTable(array $additionalColumns = [], $additionalRawColumns = [], $updateModalId = '#updateModal'): JsonResponse
     {
         $dataTable = DataTables::of($this->query)
             ->addIndexColumn()
@@ -27,7 +27,7 @@ class BaseService
                     '<span class="main-badge success-badge">Active</span>' :
                     '<span class="main-badge danger-badge">Inactive</span>';
             })
-            ->addColumn('actions', function ($row) {
+            ->addColumn('actions', function ($row) use ($updateModalId) {
                 $buttonClass = $row->status == 1 ? 'main-btn danger-btn' : 'main-btn primary-btn';
 
                 $svgIcon = $row->status == 1 ?
@@ -40,17 +40,18 @@ class BaseService
 
                 $tooltip = $row->status == 0 ? 'Restore' : 'Delete';
 
-                $canEdit = $row->status == 1 ? '<button title="View/Edit" data-id="'.$row->id.'" type="button" class="main-btn warning-btn btn-hover btn-sm text-white text-center" data-bs-toggle="modal" id="edit-button" data-bs-target="#updateModal">
+                $canEdit = $row->status == 1 ? '<button title="View/Edit" data-id="'.$row->id.'" type="button" class="main-btn warning-btn btn-hover btn-sm text-white text-center" data-bs-toggle="modal" id="edit-button" data-bs-target="'.$updateModalId.'">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                         </svg>
                     </button>' : '';
 
-                return '
+                return '<div class="d-flex gap-1">
                      '.$canEdit.'
                     <button title="'.$tooltip.'" data-id="'.$row->id.'" type="button" class="'.$buttonClass.' btn-hover btn-sm text-white text-center" id="delete-button">
                         '. $svgIcon .'
                     </button>
+                    </div>
                     ';
             });
 

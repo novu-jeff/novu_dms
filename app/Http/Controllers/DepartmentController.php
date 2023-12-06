@@ -115,4 +115,12 @@ class DepartmentController extends Controller
             return response()->json(['message' => 'Failed to delete department', 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function getDepartmentByBranch($branchId)
+    {
+        $departments = Department::where('branch_id', $branchId)
+            ->where('status', 1)
+            ->get();
+        return response()->json($departments);
+    }
 }

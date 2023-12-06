@@ -129,4 +129,17 @@ class SectionController extends Controller
             return response()->json(['message' => 'Failed to delete section', 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function getSectionByDivisionAndDepartment(Request $request)
+    {
+        $departmentId = $request->department;
+        $divisionId = $request->division;
+
+        $division = Section::where('department_id', $departmentId)
+            ->where('division_id', $divisionId)
+            ->where('status', 1)
+            ->get();
+
+        return response()->json($division);
+    }
 }
