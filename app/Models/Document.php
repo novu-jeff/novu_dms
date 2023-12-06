@@ -10,4 +10,24 @@ class Document extends Model
     use HasFactory;
 
     protected $guarded = ['id', 'created_at', 'updated_at'];
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    public function division()
+    {
+        return $this->belongsTo(Division::class);
+    }
+
+    public function section()
+    {
+        return $this->belongsTo(Section::class);
+    }
 }
