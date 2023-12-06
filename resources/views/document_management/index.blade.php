@@ -67,29 +67,41 @@
 
                             <div class="col-md-6">
                                 <div class="input-style-1">
-                                    <label for="branch">{{ __('Branch') }}</label>
-                                    <input @error('branch') class="form-control is-invalid" @enderror type="text"
-                                        name="branch" id="branch"
-                                        value="" required>
-                                    @error('branch')
-                                    <span class="invalid-feedback" role="alert">
+                                    <div class="select-style-1">
+                                        <label for="branch">{{ __('Branch') }}</label>
+                                        <div class="select-position">
+                                            <select name="branch" id="branch">
+                                                <option value="" selected disabled>Choose branch</option>
+                                                @forelse($branches as $branch)
+                                                    <option value="{{ $branch->id }}">{{ $branch->description }}</option>
+                                                @empty
+                                                @endforelse
+                                            </select>
+                                        </div>
+                                        @error('folder')
+                                        <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
-                                    @enderror
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
                             <!-- end col -->
                             <div class="col-md-6">
                                 <div class="input-style-1">
-                                    <label for="department">{{ __('Department') }}</label>
-                                    <input @error('department') class="form-control is-invalid" @enderror type="text"
-                                        name="department" id="department"
-                                        value="" required>
-                                    @error('department')
-                                    <span class="invalid-feedback" role="alert">
+                                    <div class="select-style-1">
+                                        <label for="department">{{ __('Department') }}</label>
+                                        <div class="select-position">
+                                            <select name="department" id="department">
+                                                <option value="">Choose department</option>
+                                            </select>
+                                        </div>
+                                        @error('folder')
+                                        <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
-                                    @enderror
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
                             <!-- end col -->
@@ -100,29 +112,37 @@
 
                             <div class="col-md-6">
                                 <div class="input-style-1">
-                                    <label for="division">{{ __('Division') }}</label>
-                                    <input @error('division') class="form-control is-invalid" @enderror type="text"
-                                        name="division" id="division"
-                                        value="" required>
-                                    @error('division')
-                                    <span class="invalid-feedback" role="alert">
+                                    <div class="select-style-1">
+                                        <label for="division">{{ __('Division') }}</label>
+                                        <div class="select-position">
+                                            <select name="division" id="division">
+                                                <option value="">Choose division</option>
+                                            </select>
+                                        </div>
+                                        @error('folder')
+                                        <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
-                                    @enderror
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
                             <!-- end col -->
                             <div class="col-md-6">
                                 <div class="input-style-1">
-                                    <label for="section">{{ __('Section') }}</label>
-                                    <input @error('section') class="form-control is-invalid" @enderror type="text"
-                                        name="section" id="section"
-                                        value="" required>
-                                    @error('section')
-                                    <span class="invalid-feedback" role="alert">
+                                    <div class="select-style-1">
+                                        <label for="section">{{ __('Section') }}</label>
+                                        <div class="select-position">
+                                            <select name="section" id="section">
+                                                <option value="">Choose section</option>
+                                            </select>
+                                        </div>
+                                        @error('folder')
+                                        <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
-                                    @enderror
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
                             <!-- end col -->
@@ -169,8 +189,8 @@
                             <div class="col-12">
                                 <div class="select-style-1">
                                     <label for="folder">{{ __('Folder') }}</label>
-                                    <div class="select-position" name="folder">
-                                        <select>
+                                    <div class="select-position">
+                                        <select name="folder">
                                           <option value="">Select category</option>
                                           <option value="">Category one</option>
                                           <option value="">Category two</option>
@@ -214,4 +234,99 @@
             </div>
         </div>
     </div>
+@endsection
+@section('scripts')
+<script>
+    $(document).ready(function () {
+        $('select[name="branch"]').change(e => {
+            let branch = e.target.value;
+
+            if(branch === '' || branch == null) return;
+
+            // Reset
+            $('#division').empty();
+            $('#department').empty();
+            $('#section').empty();
+
+            $('#division').append('<option selected disabled>Choose division</option>');
+            $('#department').append('<option selected disabled>Choose department</option>');
+            $('#section').append('<option selected disabled>Choose section</option>');
+
+            $('#department').val('').change();
+            $('#division').val('').change();
+            $('#section').val('').change();
+
+            $.ajax({
+                type: 'GET',
+                url: `/get-department-by-branch/${branch}`,
+                success: function (response) {
+                    let departmentElement = $('#department');
+
+                    departmentElement.empty();
+                    departmentElement.append('<option selected disabled>Choose department</option>');
+
+                    response.forEach(department => {
+                        departmentElement.append(`<option value="${department.id}">${department.description}</option>`)
+                    });
+                },
+                error: function (xhr) {
+                    handleError(xhr)
+                }
+            })
+        });
+
+        $('select[name="department"]').change(e => {
+            let departmentId = e.target.value;
+
+            if(departmentId === '' || departmentId == null) return;
+
+            $.ajax({
+                type: 'GET',
+                url: `/get-division-by-department/${departmentId}`,
+                success: function (response) {
+                    let divisionElement = $('#division');
+
+                    divisionElement.empty();
+                    divisionElement.append('<option selected disabled>Choose division</option>');
+
+                    response.forEach(division => {
+                        divisionElement.append(`<option value="${division.id}">${division.description}</option>`)
+                    });
+                },
+                error: function (xhr) {
+                    handleError(xhr)
+                }
+            })
+        });
+
+        $('select[name="division"]').change(e => {
+            let divisionId = e.target.value;
+            let departmentId = $('#department').val();
+
+            if(divisionId === '' || divisionId == null) return;
+
+            $.ajax({
+                type: 'GET',
+                url: `/get-section-by-division-and-department`,
+                data: {
+                    department: departmentId,
+                    division: divisionId,
+                },
+                success: function (response) {
+                    let sectionElement = $('#section');
+
+                    sectionElement.empty();
+                    sectionElement.append('<option selected disabled>Choose section</option>');
+
+                    response.forEach(section => {
+                        sectionElement.append(`<option value="${section.id}">${section.description}</option>`)
+                    });
+                },
+                error: function (xhr) {
+                    handleError(xhr)
+                }
+            })
+        })
+    });
+</script>
 @endsection

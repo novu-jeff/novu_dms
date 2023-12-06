@@ -167,7 +167,7 @@
                         let departmentElement = $('#department');
 
                         departmentElement.empty();
-                        departmentElement.append('<option selected disabled>Choose division</option>');
+                        departmentElement.append('<option selected disabled>Choose department</option>');
 
                         response.forEach(department => {
                             departmentElement.append(`<option value="${department.id}">${department.description}</option>`)
