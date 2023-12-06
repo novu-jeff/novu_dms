@@ -30,7 +30,18 @@
                     </div>
                 @endif
 
-                <form action="#" method="POST">
+                    @if ($message = Session::get('error'))
+                        <div class="alert-box danger-alert">
+                            <div class="alert">
+                                <h4 class="alert-heading">Error</h4>
+                                <p class="text-medium">
+                                    {{ $message }}
+                                </p>
+                            </div>
+                        </div>
+                    @endif
+
+                <form action="{{ route('documents.store') }}" enctype="multipart/form-data" method="POST">
                     @csrf
 
                     <div class="row">
@@ -78,7 +89,7 @@
                                                 @endforelse
                                             </select>
                                         </div>
-                                        @error('folder')
+                                        @error('branch')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
@@ -96,7 +107,7 @@
                                                 <option value="">Choose department</option>
                                             </select>
                                         </div>
-                                        @error('folder')
+                                        @error('department')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
@@ -119,7 +130,7 @@
                                                 <option value="">Choose division</option>
                                             </select>
                                         </div>
-                                        @error('folder')
+                                        @error('division')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
@@ -137,7 +148,7 @@
                                                 <option value="">Choose section</option>
                                             </select>
                                         </div>
-                                        @error('folder')
+                                        @error('section')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
@@ -148,28 +159,35 @@
                             <!-- end col -->
                         </div>
 
-                        <div class="col-12 d-flex">
-                            <div class="form-check radio-style mb-20 me-3">
-                              <input class="form-check-input"
-                              name="permission"
-                              type="radio" value="1" id="radio-1">
-                              <label class="form-check-label" for="radio-1">
-                                Public</label>
-                            </div>
+                        <div class="col-12">
+                            <div class="col-12 d-flex">
+                                <div class="form-check radio-style mb-20 me-3">
+                                    <input class="form-check-input"
+                                           name="permission"
+                                           type="radio" value="1" id="radio-1">
+                                    <label class="form-check-label" for="radio-1">
+                                        Public</label>
+                                </div>
 
-                            <div class="form-check radio-style mb-20 me-3">
-                                <input class="form-check-input"
-                                name="permission" type="radio" value="2" id="radio-2">
-                                <label class="form-check-label" for="radio-2">
-                                  Private</label>
-                            </div>
+                                <div class="form-check radio-style mb-20 me-3">
+                                    <input class="form-check-input"
+                                           name="permission" type="radio" value="2" id="radio-2">
+                                    <label class="form-check-label" for="radio-2">
+                                        Private</label>
+                                </div>
 
-                            <div class="form-check radio-style mb-20 me-3">
-                                <input class="form-check-input"
-                                name="permission" type="radio" value="3" id="radio-2">
-                                <label class="form-check-label" for="radio-2">
-                                  Confidential</label>
+                                <div class="form-check radio-style mb-20 me-3">
+                                    <input class="form-check-input"
+                                           name="permission" type="radio" value="3" id="radio-2">
+                                    <label class="form-check-label" for="radio-2">
+                                        Confidential</label>
+                                </div>
                             </div>
+                            @error('permission')
+                            <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                            @enderror
                         </div>
 
                         <div class="col-12">
@@ -178,6 +196,9 @@
                                 <input type="text" @error('tags') class="form-control is-invalid" @enderror name="tags"
                                        id="tags"
                                        value="" required>
+                                <div id="tagsHelpBlock" class="form-text">
+                                    Indicate multiple tags by comma seperated values e.g. (tag1, tag2, tag3)
+                                </div>
                                 @error('tags')
                                 <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -191,10 +212,7 @@
                                     <label for="folder">{{ __('Folder') }}</label>
                                     <div class="select-position">
                                         <select name="folder">
-                                          <option value="">Select category</option>
-                                          <option value="">Category one</option>
-                                          <option value="">Category two</option>
-                                          <option value="">Category three</option>
+                                          <option value="" disabled selected>Select folder</option>
                                         </select>
                                     </div>
                                     @error('folder')
@@ -241,7 +259,7 @@
         $('select[name="branch"]').change(e => {
             let branch = e.target.value;
 
-            if(branch === '' || branch == null) return;
+            if(branch == '' || branch == null) return;
 
             // Reset
             $('#division').empty();
@@ -278,7 +296,11 @@
         $('select[name="department"]').change(e => {
             let departmentId = e.target.value;
 
-            if(departmentId === '' || departmentId == null) return;
+            if(departmentId == '' || departmentId == null) return;
+
+            $('#section').empty();
+            $('#section').append('<option selected disabled>Choose section</option>');
+            $('#section').val('').change();
 
             $.ajax({
                 type: 'GET',
@@ -327,6 +349,28 @@
                 }
             })
         })
+
+        $('select[name="section"]').change(e => {
+            if(e.target.value == '') return;
+
+            $.ajax({
+                type: 'GET',
+                url: '{{ url('/get-folder-by-location') }}',
+                data: {
+                    branch: $('select[name="branch"]').val(),
+                    department: $('select[name="department"]').val(),
+                    division: $('select[name="division"]').val(),
+                    section: $('select[name="section"]').val(),
+                },
+                success: function(response) {
+                    $('select[name="folder"]').empty();
+                    $('select[name="folder"]').append('<option selected disabled value="">Select folder</option>');
+                    response.forEach(folder => {
+                        $('select[name="folder"]').append(`<option value="${folder.id}">${folder.name}</option>`);
+                    });
+                }
+            })
+        });
     });
 </script>
 @endsection

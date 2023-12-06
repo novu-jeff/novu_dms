@@ -3,6 +3,7 @@
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DivisionController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentManagementController;
 use App\Http\Controllers\FolderController;
 use App\Http\Controllers\ProfileController;
@@ -25,6 +26,9 @@ Route::get('/', function () {
     return view('auth.login');
 });
 
+Route::get('/get-folder-by-location', [FolderController::class, 'getFolderByLocation'])->name('getFolderByLocation');
+
+
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -37,6 +41,7 @@ Route::middleware('auth')->group(function () {
     Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
 
+    Route::post('/document-management', [DocumentManagementController::class, 'store'])->name('documents.store');
     Route::get('/document-management', [DocumentManagementController::class, 'index'])->name('document_management.index');
 
     Route::get('/branches/all', [BranchController::class, 'all']);

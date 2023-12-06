@@ -147,4 +147,15 @@ class FolderController extends Controller
             return response()->json(['message' => 'Failed to delete branch', 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function getFolderByLocation(Request $request)
+    {
+        $folders = Folder::where('branch_id', $request->branch)
+            ->where('department_id', $request->department)
+            ->where('division_id', $request->division)
+            ->where('section_id', $request->section)
+            ->get();
+
+        return response()->json($folders);
+    }
 }
