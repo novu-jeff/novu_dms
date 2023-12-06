@@ -50,7 +50,7 @@
                                 <label for="title">{{ __('Document Title') }}</label>
                                 <input type="text" @error('title') class="form-control is-invalid" @enderror name="title"
                                        id="title"
-                                       value="" required>
+                                       value="" required autofocus>
                                 @error('title')
                                 <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -81,7 +81,7 @@
                                     <div class="select-style-1">
                                         <label for="branch">{{ __('Branch') }}</label>
                                         <div class="select-position">
-                                            <select name="branch" id="branch">
+                                            <select name="branch" id="branch" required>
                                                 <option value="" selected disabled>Choose branch</option>
                                                 @forelse($branches as $branch)
                                                     <option value="{{ $branch->id }}">{{ $branch->description }}</option>
@@ -103,7 +103,7 @@
                                     <div class="select-style-1">
                                         <label for="department">{{ __('Department') }}</label>
                                         <div class="select-position">
-                                            <select name="department" id="department">
+                                            <select name="department" id="department" required>
                                                 <option value="">Choose department</option>
                                             </select>
                                         </div>
@@ -126,7 +126,7 @@
                                     <div class="select-style-1">
                                         <label for="division">{{ __('Division') }}</label>
                                         <div class="select-position">
-                                            <select name="division" id="division">
+                                            <select name="division" id="division" required>
                                                 <option value="">Choose division</option>
                                             </select>
                                         </div>
@@ -144,7 +144,7 @@
                                     <div class="select-style-1">
                                         <label for="section">{{ __('Section') }}</label>
                                         <div class="select-position">
-                                            <select name="section" id="section">
+                                            <select name="section" id="section" required>
                                                 <option value="">Choose section</option>
                                             </select>
                                         </div>
@@ -164,21 +164,21 @@
                                 <div class="form-check radio-style mb-20 me-3">
                                     <input class="form-check-input"
                                            name="permission"
-                                           type="radio" value="1" id="radio-1">
+                                           type="radio" value="1" id="radio-1" required>
                                     <label class="form-check-label" for="radio-1">
                                         Public</label>
                                 </div>
 
                                 <div class="form-check radio-style mb-20 me-3">
                                     <input class="form-check-input"
-                                           name="permission" type="radio" value="2" id="radio-2">
+                                           name="permission" type="radio" value="2" id="radio-2" required>
                                     <label class="form-check-label" for="radio-2">
                                         Private</label>
                                 </div>
 
                                 <div class="form-check radio-style mb-20 me-3">
                                     <input class="form-check-input"
-                                           name="permission" type="radio" value="3" id="radio-2">
+                                           name="permission" type="radio" value="3" id="radio-2" required>
                                     <label class="form-check-label" for="radio-2">
                                         Confidential</label>
                                 </div>
@@ -211,7 +211,7 @@
                                 <div class="select-style-1">
                                     <label for="folder">{{ __('Folder') }}</label>
                                     <div class="select-position">
-                                        <select name="folder">
+                                        <select name="folder" required>
                                           <option value="" disabled selected>Select folder</option>
                                         </select>
                                     </div>
