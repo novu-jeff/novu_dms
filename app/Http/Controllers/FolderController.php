@@ -154,6 +154,7 @@ class FolderController extends Controller
             ->where('department_id', $request->department)
             ->where('division_id', $request->division)
             ->where('section_id', $request->section)
+            ->where('status', 1)
             ->get();
 
         return response()->json($folders);
