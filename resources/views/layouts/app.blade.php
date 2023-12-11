@@ -99,13 +99,13 @@
                 <div class="col-md-6 order-last order-md-first">
                     <div class="copyright text-md-start">
                         <p class="text-sm">
-                            Designed and Developed by
+                            Document Management System
                             <a
                                     href="https://plainadmin.com"
                                     rel="nofollow"
                                     target="_blank"
                             >
-                                PlainAdmin
+                                - All rights reserved.
                             </a>
                         </p>
                     </div>

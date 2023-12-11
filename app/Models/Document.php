@@ -30,4 +30,9 @@ class Document extends Model
     {
         return $this->belongsTo(Section::class);
     }
+
+    public function folder()
+    {
+        return $this->belongsTo(Folder::class);
+    }
 }

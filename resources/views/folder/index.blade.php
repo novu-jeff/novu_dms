@@ -289,12 +289,12 @@
 
             $('#update-form-submit').click(function () {
                 // Serialize the form data
-                var formData = $('#update-form').serialize() + '&_method=PUT';
+                var formData = $('#add-form').serialize() + '&_method=PUT';
 
                 // Perform the Ajax request
                 $.ajax({
                     type: 'POST',
-                    url: '/folders/' + branchId,
+                    url: '/folders/' + folderId,
                     data: formData,
                     success: function (response) {
                         Swal.fire({
@@ -302,8 +302,8 @@
                             text: response.message,
                             icon: "success"
                         });
-                        updateModal.hide();
-                        $('#update-form')[0].reset();
+                        addModal.hide();
+                        $('#add-form')[0].reset();
                         dataTable.ajax.reload();
                     },
                     error: function (xhr) {
