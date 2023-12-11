@@ -159,7 +159,8 @@
                             <!-- end col -->
                         </div>
 
-                        <div class="col-12">
+                        <div class="col-12 input-style-1">
+                            <label for="permission">{{ __('Document Permission') }}</label>
                             <div class="col-12 d-flex">
                                 <div class="form-check radio-style mb-20 me-3">
                                     <input class="form-check-input"
@@ -205,6 +206,38 @@
                                     </span>
                                 @enderror
                             </div>
+                        </div>
+
+                        <div class="col-12 input-style-1">
+                            <label for="type">{{ __('Document Type') }}</label>
+                            <div class="col-12 d-flex">
+                                <div class="form-check radio-style mb-20 me-3">
+                                    <input class="form-check-input"
+                                           name="type"
+                                           type="radio" value="1" id="radio-4" required>
+                                    <label class="form-check-label" for="radio-4">
+                                        Committee Report</label>
+                                </div>
+
+                                <div class="form-check radio-style mb-20 me-3">
+                                    <input class="form-check-input"
+                                           name="type" type="radio" value="2" id="radio-5" required>
+                                    <label class="form-check-label" for="radio-5">
+                                        Resolution</label>
+                                </div>
+
+                                <div class="form-check radio-style mb-20 me-3">
+                                    <input class="form-check-input"
+                                           name="type" type="radio" value="3" id="radio-6" required>
+                                    <label class="form-check-label" for="radio-6">
+                                        Ordinance</label>
+                                </div>
+                            </div>
+                            @error('permission')
+                            <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                            @enderror
                         </div>
 
                             <div class="col-12">

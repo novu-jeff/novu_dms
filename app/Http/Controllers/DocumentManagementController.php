@@ -27,6 +27,7 @@ class DocumentManagementController extends Controller
             'section' => 'required|exists:sections,id',
             'permission' => 'required|in:1,2,3',
             'tags' => 'required|string',
+            'type' => 'required|in:1,2,3',
             'folder' => 'required',
             'file' => 'required',
         ]);
@@ -50,6 +51,7 @@ class DocumentManagementController extends Controller
                 'document_access' => $validatedData['permission'],
                 'tags' => $validatedData['tags'],
                 'folder_id' => $validatedData['folder'],
+                'type' => $validatedData['type'],
                 'file' => $filePath, // Assuming you want to store the file in the 'documents' directory
             ]);
 
