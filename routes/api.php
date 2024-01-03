@@ -19,6 +19,6 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //});
 
-Route::middleware(['api'])->group(function () {
+Route::middleware(['api', 'client'])->group(function () {
     Route::get('documents', [DocumentManagementController::class, 'getDocumentsByYearAndMonth']);
 });

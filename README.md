@@ -13,6 +13,10 @@
 - `month` (integer, required): The month for filtering documents.
 - `type` (integer, required): 1 = Committee Report, 2 = Resolutions, 3 = Ordinance. The type of document to filter.
 
+### Request Headers
+- **Accept:** `application/json`
+- **Authorization:** `Bearer YOUR_ACCESS_TOKEN`
+
 ### Example Request
 ```http
 GET /api/documents?year={year}&month={month}&type={document-type}
@@ -102,3 +106,31 @@ Document Access:
 Status Codes:
 - 200 OK: Successful request.
 - 500 Internal Server Error: An error occurred on the server.
+
+## How to get an access token
+
+1. From the root directory of the DMS application.
+2. ```php artisan passport:client --client```
+3. Save the Client ID and Client Secret in text file.
+4. In Postman or similar application. Create a request to generate the access token.
+ - Set the request type to <strong>POST</strong>
+ - Enter the token endpoint URL in the request field: `http://your-dms-api-domain.com/oauth/token`
+ - Set the request headers
+   - Accept: application/json
+- Set the request body
+   - Select the `x-www-form-urlencoded` option
+   - Add the following key-value pairs
+     - `grant_type`: `client_credentials`
+     - `client_id`: `your-client-id`
+     - `client_secret`: `your-client-secret`
+- Send the request [End]
+
+
+### Example Response
+```
+{
+    "token_type": "Bearer",
+    "expires_in": 31622400,
+    "access_token": "encrypted_access_token"
+}
+```
