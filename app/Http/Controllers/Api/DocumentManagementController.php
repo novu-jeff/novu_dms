@@ -25,7 +25,6 @@ class DocumentManagementController extends Controller
                     'section:id,description,status',
                     'folder'
                 ])
-                ->take(2)
                 ->get();
 
             return response()->json([
