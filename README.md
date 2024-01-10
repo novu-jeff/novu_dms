@@ -117,6 +117,7 @@ Types:
 - 1 = Committee Report
 - 2 = Resolutions
 - 3 = Ordinance
+- 4 = Session Meeting
 
 Document Access:
 - 1 = Public
