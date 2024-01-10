@@ -17,6 +17,8 @@ class DocumentFinderController extends Controller
             return $query->where('title', 'like', '%' . $search . '%')
                 ->orWhere('author', 'like', '%' . $search . '%')
                 ->orWhere('tags', 'like', '%' . $search . '%')
+                ->orWhereMonth('created_at', '=', $search)
+                ->orWhereYear('created_at', '=', $search)
                 ->orWhereHas('branch', function ($branchQuery) use ($search) {
                     $branchQuery->where('description', 'like', '%' . $search . '%');
                 })
