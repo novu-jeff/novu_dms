@@ -463,9 +463,6 @@
                 }
             }
 
-            // Proceeds to process importing
-            document.getElementById('document_form').submit(); // Submit form
-
             // Show Loader
             swal.fire({
                 html: '<h5>Please wait while the form is processing...</h5>',
@@ -474,6 +471,9 @@
                 allowEscapeKey: false,
                 didOpen: () => Swal.showLoading()
             });
+
+            // Proceeds to process the submit
+            document.getElementById('document_form').submit(); // Submit form
 
         })
 
