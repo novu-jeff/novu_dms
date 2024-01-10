@@ -9,9 +9,10 @@
 
 ### Parameters
 
-- `year` (integer, required): The year for filtering documents.
-- `month` (integer, required): The month for filtering documents.
-- `type` (integer, required): 1 = Committee Report, 2 = Resolutions, 3 = Ordinance. The type of document to filter.
+- `year` (integer, optional): The year for filtering documents.
+- `month` (integer, optional): The month for filtering documents.
+- `type` (integer, optional): 1 = Committee Report, 2 = Resolutions, 3 = Ordinance. The type of document to filter.
+- `tags` (string, optional): Tags of the document
 
 ### Request Headers
 - **Accept:** `application/json`
@@ -19,11 +20,11 @@
 
 ### Example Request
 ```http
-GET /api/documents?year={year}&month={month}&type={document-type}
+GET /api/documents?year={year}&month={month}&type={document-type}&tags={tags}
 ```
 
 ```http
-GET /api/documents?year=2023&month=12&type=1
+GET /api/documents?year=2023&month=12&type=1&tags=example_tags
 ```
 
 ### Example Response
@@ -31,53 +32,72 @@ GET /api/documents?year=2023&month=12&type=1
 {
     "data": [
         {
-            "id": 1,
-            "title": "Possimus id aliqui",
+            "id": 2,
+            "title": "Aaaaaaaa",
             "author": "Author ABC",
-            "branch_id": 2,
+            "branch_id": 1,
             "department_id": 1,
-            "division_id": 2,
-            "section_id": 5,
-            "folder_id": 3,
+            "division_id": 1,
+            "section_id": 1,
+            "folder_id": 1,
             "document_access": "1",
             "tags": "tag1, tag2, tag3",
-            "file": "3/wYa3izfcKGGaS57MuuybDHFduDIsiM9Zk5DSId5I.pdf",
+            "created_at": "2024-01-10T02:44:08.000000Z",
+            "updated_at": "2024-01-10T02:44:08.000000Z",
             "type": "1",
-            "created_at": "2023-12-06T21:07:59.000000Z",
-            "updated_at": "2023-12-06T21:07:59.000000Z",
             "branch": {
-                "id": 2,
-                "description": "Branch Two Edited",
+                "id": 1,
+                "description": "Branch One",
                 "status": 1
             },
             "department": {
                 "id": 1,
-                "description": "Department 1 Edited",
+                "description": "Department 1",
                 "status": 1
             },
             "division": {
-                "id": 2,
-                "description": "Division 2 edited",
+                "id": 1,
+                "description": "Division 1",
                 "status": 1
             },
             "section": {
-                "id": 5,
-                "description": "Section 4",
+                "id": 1,
+                "description": "Section 1",
                 "status": 1
             },
             "folder": {
-                "id": 3,
-                "name": "Folder 3",
-                "branch_id": 2,
+                "id": 1,
+                "name": "Folder 1",
+                "branch_id": 1,
                 "department_id": 1,
-                "division_id": 2,
-                "section_id": 5,
-                "created_at": "2023-12-06T16:11:26.000000Z",
-                "updated_at": "2023-12-06T16:11:26.000000Z",
+                "division_id": 1,
+                "section_id": 1,
+                "created_at": "2024-01-10T02:14:19.000000Z",
+                "updated_at": "2024-01-10T02:14:19.000000Z",
                 "status": 1
-            }
+            },
+            "files": [
+                {
+                    "id": 1,
+                    "fileable_id": 2,
+                    "fileable_type": "App\\Models\\Document",
+                    "file_name": "sample.pdf",
+                    "file_path": "1/ouPZ72sOZ3d0TmyNrR4o4njbSe9JSsB35c4RwWIS.pdf",
+                    "created_at": "2024-01-10T02:44:08.000000Z",
+                    "updated_at": "2024-01-10T02:44:08.000000Z"
+                },
+                {
+                    "id": 2,
+                    "fileable_id": 2,
+                    "fileable_type": "App\\Models\\Document",
+                    "file_name": "dummy.pdf",
+                    "file_path": "1/MZ4uFOGKEJtPMbKfhwInxCATrOrNlekZ2REaCzNZ.pdf",
+                    "created_at": "2024-01-10T02:44:08.000000Z",
+                    "updated_at": "2024-01-10T02:44:08.000000Z"
+                }
+            ]
         },
-        ... so on
+        ...so on
     ],
     "success": true
 }
