@@ -35,4 +35,9 @@ class Document extends Model
     {
         return $this->belongsTo(Folder::class);
     }
+
+    public function files()
+    {
+        return $this->morphMany(File::class, 'fileable');
+    }
 }

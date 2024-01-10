@@ -19,13 +19,13 @@ class DocumentManagementController extends Controller
             $documents = Document::when($year, function ($query) use ($year) {
                 $query->whereYear('created_at', '=', $year);
             })
-            ->when($month, function ($query) use ($month) {
+            ->when(!empty($month), function ($query) use ($month) {
                 $query->whereMonth('created_at', '=', $month);
             })
-            ->when($type, function ($query) use ($type) {
+            ->when(!empty($type), function ($query) use ($type) {
                 $query->where('type', $type);
             })
-            ->when($tags, function ($query) use ($tags) {
+            ->when(!empty($tags), function ($query) use ($tags) {
                 $query->where('tags', 'like', '%' . $tags . '%');
             })
             ->with([
@@ -33,7 +33,8 @@ class DocumentManagementController extends Controller
                 'department:id,description,status',
                 'division:id,description,status',
                 'section:id,description,status',
-                'folder'
+                'folder',
+                'files'
             ])
             ->get();
 
@@ -42,10 +43,10 @@ class DocumentManagementController extends Controller
                 'success' => true
             ], 200);
         } catch (\Exception $e) {
-            return response([
+            return response()->json([
                 'error' => $e->getMessage(),
                 'success' => false,
-            ], 500)->json();
+            ], 500);
         }
 
     }

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\File;
 use App\Models\Document;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -27,7 +29,10 @@ class DocumentFinderController extends Controller
                 ->orWhereHas('section', function ($sectionQuery) use ($search) {
                     $sectionQuery->where('description', 'like', '%' . $search . '%');
                 });
-        })->paginate(8);
+        })
+        ->with('files')
+        ->latest()
+        ->paginate(10);
 
         // Append the search parameter to pagination links
         $documents->appends(['search' => $search]);
@@ -35,8 +40,15 @@ class DocumentFinderController extends Controller
         return view('document_finder.index', compact('documents'));
     }
 
-    public function download(Document $document)
+    public function download($id)
     {
-        return Storage::disk('public')->download($document->file);
+
+        $fileName = Str::lower(request()->filename);
+        $documentFile = File::where('fileable_type', Document::class)
+            ->where('fileable_id', $id)
+            ->where('file_name', $fileName)
+            ->first();
+
+        return Storage::disk('public')->download($documentFile->file_path);
     }
 }

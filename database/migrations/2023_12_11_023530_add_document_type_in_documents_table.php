@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('documents', function (Blueprint $table) {
-            $table->string('type')->after('file')
+            $table->string('type')
                     ->comment('1 = Committee Report, 2 = Resolutions, 3 = Ordinance')
                     ->default(1);
         });
