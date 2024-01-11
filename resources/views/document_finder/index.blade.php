@@ -65,13 +65,16 @@
                     <p>Author: {{ $doc->author }}</p>
                     <div class="mb-3">{{ \Illuminate\Support\Carbon::parse($doc->created_at)->format('Y-m-d') }}</div>
                     <p>Document Permission: {!!  ($doc->document_access == 1 ? '<span class="main-badge success-badge">Public</span>' : ($doc->document_access == 2 ? '<span class="main-badge primary-badge">Private</span>' : '<span class="main-badge warning-badge">Confidential</span>')) !!}</p>
-                    <form id="download-form-{{$doc->id}}" action="{{ route('document_finder.download', $doc) }}" method="post">
+                    @foreach ($doc->files as $file)
+                    <form id="download-form-{{$doc->id}}-{{ $file->id }}" action="{{ route('document_finder.download', $doc->id) }}" method="post">
                         @csrf
                         <input name="document" type="hidden" value="{{ $doc->id }}">
+                        <input name="filename" type="hidden" value="{{ $file->file_name }}">
                         <div class="d-flex align-items-end gap-3">
-                            <a href="#!" onclick="document.getElementById('download-form-{{ $doc->id }}').submit()">Download File</a>
+                            <a class="text-uppercase" href="#!" onclick="document.getElementById('download-form-{{ $doc->id }}-{{ $file->id }}').submit()">{{ $file->file_name }}</a>
                         </div>
                     </form>
+                    @endforeach
 
                 </div>
             </div>

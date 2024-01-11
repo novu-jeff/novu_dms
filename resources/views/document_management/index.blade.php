@@ -41,7 +41,7 @@
                         </div>
                     @endif
 
-                <form action="{{ route('documents.store') }}" enctype="multipart/form-data" method="POST">
+                <form id="document_form" action="{{ route('documents.store') }}" enctype="multipart/form-data" method="POST">
                     @csrf
 
                     <div class="row">
@@ -232,6 +232,13 @@
                                     <label class="form-check-label" for="radio-6">
                                         Ordinance</label>
                                 </div>
+
+                                <div class="form-check radio-style mb-20 me-3">
+                                    <input class="form-check-input"
+                                           name="type" type="radio" value="4" id="radio-6" required>
+                                    <label class="form-check-label" for="radio-6">
+                                        Session Meeting</label>
+                                </div>
                             </div>
                             @error('permission')
                             <span class="invalid-feedback" role="alert">
@@ -260,9 +267,12 @@
                         <div class="col-12">
                             <div class="input-style-1">
                                 <label for="file">{{ __('Upload') }}</label>
-                                <input type="file" @error('file') class="form-control is-invalid" @enderror name="file"
+                                <input id="file_upload" type="file" @error('file') class="form-control is-invalid" @enderror name="file[]"
                                        id="file"
-                                       value="" required>
+                                       value="" required multiple>
+                                <div id="fileHelpBlock" class="form-text">
+                                    Supported file formats e.g(jpeg, png, pdf, docx)
+                                </div>
                                 @error('file')
                                 <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -274,7 +284,7 @@
                         <!-- end col -->
                         <div class="col-12">
                             <div class="button-group d-flex justify-content-center flex-wrap">
-                                <button type="submit" class="main-btn primary-btn btn-hover w-100 text-center">
+                                <button id="submit-btn" type="button" class="main-btn primary-btn btn-hover w-100 text-center">
                                     {{ __('Submit') }}
                                 </button>
                             </div>
@@ -404,6 +414,77 @@
                 }
             })
         });
+
+
+        // When submit button is clicked show loader
+        $('#submit-btn').click(e => {
+            e.preventDefault()
+
+            // Flag to check if any non-file input is empty
+            let anyEmpty = false;
+
+            // Iterate through all input elements
+            $('input, select').each(function () {
+                // Check if the input is not a file input and is empty
+                if ($(this).attr('type') !== 'file' && !$(this).val()) {
+                    anyEmpty = true;
+                    return false; // Exit the loop early if any empty non-file input is found
+                }
+            });
+
+            // If any non-file input is empty, show a warning
+            if (anyEmpty) {
+                Swal.fire({
+                    title: "Oops!",
+                    text: "Please fill out all the required information.",
+                    icon: "warning"
+                });
+                return false;
+            }
+
+            let files = $('#file_upload')[0].files;
+
+            // Check if there are files
+            if (files.length === 0) {
+                Swal.fire(
+                    'Oops!',
+                    'Please select at least one file.',
+                    'warning'
+                );
+                return false;
+            }
+
+            // Check each file for supported formats
+            for (let i = 0; i < files.length; i++) {
+                let fileType = files[i].type;
+                let supportedFormats = ['image/jpeg', 'image/png', 'application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+
+                // Check if file type is supported
+                if (!supportedFormats.includes(fileType)) {
+                    Swal.fire(
+                        'Oops!',
+                        'File type is not supported for one or more selected files.',
+                        'warning'
+                    );
+                    return false;
+                }
+            }
+
+            // Show Loader
+            swal.fire({
+                html: '<h5>Please wait while the form is processing...</h5>',
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            // Proceeds to process the submit
+            document.getElementById('document_form').submit(); // Submit form
+
+        })
+
+
     });
 </script>
 @endsection

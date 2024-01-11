@@ -14,28 +14,39 @@ class DocumentManagementController extends Controller
             $year = $request->input('year');
             $month = $request->input('month');
             $type = $request->input('type');
+            $tags = $request->input('tags');
 
-            $documents = Document::whereYear('created_at', '=', $year)
-                ->whereMonth('created_at', '=', $month)
-                ->where('type', $type)
-                ->with([
-                    'branch:id,description,status',
-                    'department:id,description,status',
-                    'division:id,description,status',
-                    'section:id,description,status',
-                    'folder'
-                ])
-                ->get();
+            $documents = Document::when($year, function ($query) use ($year) {
+                $query->whereYear('created_at', '=', $year);
+            })
+            ->when(!empty($month), function ($query) use ($month) {
+                $query->whereMonth('created_at', '=', $month);
+            })
+            ->when(!empty($type), function ($query) use ($type) {
+                $query->where('type', $type);
+            })
+            ->when(!empty($tags), function ($query) use ($tags) {
+                $query->where('tags', 'like', '%' . $tags . '%');
+            })
+            ->with([
+                'branch:id,description,status',
+                'department:id,description,status',
+                'division:id,description,status',
+                'section:id,description,status',
+                'folder',
+                'files'
+            ])
+            ->get();
 
             return response()->json([
                 'data' => $documents,
                 'success' => true
             ], 200);
         } catch (\Exception $e) {
-            return response([
+            return response()->json([
                 'error' => $e->getMessage(),
                 'success' => false,
-            ], 500)->json();
+            ], 500);
         }
 
     }
