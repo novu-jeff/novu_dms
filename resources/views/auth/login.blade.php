@@ -5,6 +5,7 @@
         <div class="auth-cover-wrapper bg-primary-100">
             <div class="auth-cover">
                 <div class="title text-center">
+                    <img src="{{ asset('images/logo/novulution_logo.png') }}" width="60" alt="logo"/>
                     <h1 class="text-primary mb-10">{{ __('Login') }}</h1>
                 </div>
                 <div class="cover-image">
