@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title') Document Finder @endsection
+
 @section('content')
     <!-- ========== title-wrapper start ========== -->
     <div class="title-wrapper pt-30">

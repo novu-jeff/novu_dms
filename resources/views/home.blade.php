@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title') Dashboard @endsection
+
 @section('content')
     <!-- ========== title-wrapper start ========== -->
     <div class="title-wrapper pt-30">

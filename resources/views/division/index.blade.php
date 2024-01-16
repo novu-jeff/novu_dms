@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title') Division @endsection
+
 @section('content')
 
 

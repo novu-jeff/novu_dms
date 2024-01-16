@@ -1,5 +1,7 @@
 @extends('layouts.guest')
 
+@section('title') Register @endsection
+
 @section('content')
     <div class="col-lg-6">
         <div class="auth-cover-wrapper bg-primary-100">
