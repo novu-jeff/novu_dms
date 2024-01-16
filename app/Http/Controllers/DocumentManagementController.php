@@ -29,7 +29,7 @@ class DocumentManagementController extends Controller
             'section' => 'required|exists:sections,id',
             'permission' => 'required|in:1,2,3',
             'tags' => 'required|string',
-            'type' => 'required|in:1,2,3',
+            'type' => 'required|in:1,2,3,4',
             'folder' => 'required',
             'file.*' => 'required|mimes:jpeg,png,pdf,docx', // Updated file types
         ]);

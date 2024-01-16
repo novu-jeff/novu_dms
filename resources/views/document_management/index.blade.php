@@ -427,12 +427,20 @@
 
             // Iterate through all input elements
             $('input, select').each(function () {
-                // Check if the input is not a file input and is empty
-                if ($(this).attr('type') !== 'file' && !$(this).val()) {
+                // Check if the input is not a file input and is empty or if it's a radio input and none are checked
+                if (
+                    ($(this).attr('type') !== 'file' && !$(this).val()) ||
+                    (
+                        $(this).attr('type') === 'radio' &&
+                        !$(':radio[name="' + $(this).attr('name') + '"]:checked').length &&
+                        ($(this).attr('name') === 'permission' || $(this).attr('name') === 'type')
+                    )
+                ) {
                     anyEmpty = true;
-                    return false; // Exit the loop early if any empty non-file input is found
+                    return false; // Exit the loop early if any empty non-file input or unchecked required radio input is found
                 }
             });
+
 
             // If any non-file input is empty, show a warning
             if (anyEmpty) {
