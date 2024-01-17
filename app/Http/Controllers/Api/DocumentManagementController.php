@@ -10,11 +10,20 @@ class DocumentManagementController extends Controller
 {
     public function getDocumentsByYearAndMonth(Request $request)
     {
+        $request->validate([
+            'year' => '',
+            'month' => '',
+            'type' => 'in:1,2,3,4',
+            'tags' => 'string',
+            'doc_date' => 'date'
+        ]);
+
         try {
             $year = $request->input('year');
             $month = $request->input('month');
             $type = $request->input('type');
             $tags = $request->input('tags');
+            $docDate = $request->input('doc_date');
 
             $documents = Document::when($year, function ($query) use ($year) {
                 $query->whereYear('created_at', '=', $year);
@@ -27,6 +36,9 @@ class DocumentManagementController extends Controller
             })
             ->when(!empty($tags), function ($query) use ($tags) {
                 $query->where('tags', 'like', '%' . $tags . '%');
+            })
+            ->when(!empty($docDate), function ($query) use ($docDate) {
+                $query->whereDate('doc_date', $docDate);
             })
             ->with([
                 'branch:id,description,status',

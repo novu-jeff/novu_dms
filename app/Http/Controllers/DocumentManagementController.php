@@ -30,6 +30,7 @@ class DocumentManagementController extends Controller
             'permission' => 'required|in:1,2,3',
             'tags' => 'required|string',
             'type' => 'required|in:1,2,3,4',
+            'doc_date' => 'required|date',
             'folder' => 'required',
             'file.*' => 'required|mimes:jpeg,png,pdf,docx', // Updated file types
         ]);
@@ -49,6 +50,7 @@ class DocumentManagementController extends Controller
                 'document_access' => $validatedData['permission'],
                 'tags' => $validatedData['tags'],
                 'folder_id' => $validatedData['folder'],
+                'doc_date' => $validatedData['doc_date'],
                 'type' => $validatedData['type']
             ]);
 

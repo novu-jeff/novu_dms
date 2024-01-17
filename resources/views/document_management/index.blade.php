@@ -268,6 +268,20 @@
 
                         <div class="col-12">
                             <div class="input-style-1">
+                                <label for="file">{{ __('Document Date') }}</label>
+                                <input id="date" type="date" @error('date') class="form-control is-invalid" @enderror name="doc_date"
+                                       id="date"
+                                       value="" required>
+                                @error('date')
+                                <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="input-style-1">
                                 <label for="file">{{ __('Upload') }}</label>
                                 <input id="file_upload" type="file" @error('file') class="form-control is-invalid" @enderror name="file[]"
                                        id="file"
