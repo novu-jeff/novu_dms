@@ -11,8 +11,9 @@
 
 - `year` (integer, optional): The year for filtering documents.
 - `month` (integer, optional): The month for filtering documents.
-- `type` (integer, optional): 1 = Committee Report, 2 = Resolutions, 3 = Ordinance. The type of document to filter.
+- `type` (integer, optional): 1 = Committee Report, 2 = Resolutions, 3 = Ordinance, 4 = Session Meeting. The type of document to filter.
 - `tags` (string, optional): Tags of the document
+- `doc_date` (date, optional) Document Date
 
 ### Request Headers
 - **Accept:** `application/json`
@@ -20,11 +21,11 @@
 
 ### Example Request
 ```http
-GET /api/documents?year={year}&month={month}&type={document-type}&tags={tags}
+GET /api/documents?year={year}&month={month}&type={document-type}&doc_date={doc_date}&tags={tags}
 ```
 
 ```http
-GET /api/documents?year=2023&month=12&type=1&tags=example_tags
+GET /api/documents?year=2024&month=1&type=1&doc_date=2024-01-01&tags=example_tags
 ```
 
 ### Example Response
@@ -45,6 +46,7 @@ GET /api/documents?year=2023&month=12&type=1&tags=example_tags
             "created_at": "2024-01-10T02:44:08.000000Z",
             "updated_at": "2024-01-10T02:44:08.000000Z",
             "type": "1",
+            "doc_date": "2024-01-01 00:00:00",
             "branch": {
                 "id": 1,
                 "description": "Branch One",
