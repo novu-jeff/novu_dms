@@ -14,7 +14,7 @@ class DocumentManagementController extends Controller
             'year' => '',
             'month' => '',
             'type' => 'in:1,2,3,4',
-            'tags' => 'string',
+            'tags' => '',
             'doc_date' => 'date'
         ]);
 
