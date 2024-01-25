@@ -6,6 +6,7 @@ use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentFinderController;
 use App\Http\Controllers\DocumentManagementController;
+use App\Http\Controllers\Api\DocumentManagementController as APIDocumentManagementController;
 use App\Http\Controllers\FolderController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SectionController;
@@ -33,6 +34,11 @@ Route::get('/get-folder-by-location', [FolderController::class, 'getFolderByLoca
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+// Web API's
+Route::prefix('api')->group(function () {
+    Route::put('documents/{document}/permission', [APIDocumentManagementController::class, 'updateDocumentPermission']);
+});
 
 Route::middleware('auth')->group(function () {
     Route::view('about', 'about')->name('about');
@@ -63,6 +69,5 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/document-finder', [DocumentFinderController::class, 'index'])->name('document_finder.index');
     Route::post('/document-finder/download/{document}', [DocumentFinderController::class, 'download'])->name('document_finder.download');
-
-
 });
+

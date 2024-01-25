@@ -2,64 +2,64 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\Document;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\DocumentManagementRequest;
+use App\Http\Requests\DocumentPermissionRequest;
+use App\Http\Services\DocumentService;
 
 class DocumentManagementController extends Controller
 {
-    public function getDocumentsByYearAndMonth(Request $request)
+    protected $documentService;
+
+    public function __construct(DocumentService $documentService)
     {
-        $request->validate([
-            'year' => '',
-            'month' => '',
-            'type' => 'in:1,2,3,4',
-            'tags' => '',
-            'doc_date' => 'date'
-        ]);
+        $this->documentService = $documentService;
+    }
 
+    public function getDocumentsByYearAndMonth(DocumentManagementRequest $request)
+    {
+        DB::beginTransaction();
         try {
-            $year = $request->input('year');
-            $month = $request->input('month');
-            $type = $request->input('type');
-            $tags = $request->input('tags');
-            $docDate = $request->input('doc_date');
+            $payload = $request->validated();
 
-            $documents = Document::when($year, function ($query) use ($year) {
-                $query->whereYear('created_at', '=', $year);
-            })
-            ->when(!empty($month), function ($query) use ($month) {
-                $query->whereMonth('created_at', '=', $month);
-            })
-            ->when(!empty($type), function ($query) use ($type) {
-                $query->where('type', $type);
-            })
-            ->when(!empty($tags), function ($query) use ($tags) {
-                $query->where('tags', 'like', '%' . $tags . '%');
-            })
-            ->when(!empty($docDate), function ($query) use ($docDate) {
-                $query->whereDate('doc_date', $docDate);
-            })
-            ->with([
-                'branch:id,description,status',
-                'department:id,description,status',
-                'division:id,description,status',
-                'section:id,description,status',
-                'folder',
-                'files'
-            ])
-            ->get();
+            $documents = $this->documentService->getDocumentsByYearAndMonth($payload);
 
+            DB::commit();
             return response()->json([
                 'data' => $documents,
                 'success' => true
             ], 200);
         } catch (\Exception $e) {
+            DB::rollback();
             return response()->json([
-                'error' => $e->getMessage(),
+                'error' => env('APP_ENV') === 'local' ? $e->getMessage() : 'Server Error: Contact Administrator',
                 'success' => false,
             ], 500);
         }
+    }
 
+    public function updateDocumentPermission($id, DocumentPermissionRequest $documentPermissionRequest)
+    {
+        DB::beginTransaction();
+        try {
+        $this->documentService->updateDocumentPermission($id, $documentPermissionRequest->permission);
+
+            $document = Document::find($id);
+
+            DB::commit();
+            return response()->json([
+                'data' => $document,
+                'success' => true
+            ], 200);
+        } catch (\Exception $th) {
+            DB::rollback();
+            return response()->json([
+                'error' => env('APP_ENV') === 'local' ? $e->getMessage() : 'Server Error: Contact Administrator',
+                'success' => false,
+            ], 500);
+        }
     }
 }
