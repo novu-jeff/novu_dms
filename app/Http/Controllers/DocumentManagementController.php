@@ -79,5 +79,4 @@ class DocumentManagementController extends Controller
             return redirect('/document-management')->with('error', $exception->getMessage());
         }
     }
-
 }

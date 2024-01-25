@@ -44,4 +44,14 @@ class DocumentService
 
         return $documents;
     }
+
+    public function updateDocumentPermission($id, $payload)
+    {
+        $doc = Document::findOrFail($id);
+        $doc->update([
+            'document_access' => $payload
+        ]);
+
+        return $doc;
+    }
 }

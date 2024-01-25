@@ -63,21 +63,35 @@
         <div class="card-styles">
             <div class="card-style-3 mb-30">
                 <div class="card-content">
-                    <h4>{{ $doc->title }}</h4>
-                    <p>Author: {{ $doc->author }}</p>
-                    <div class="mb-3">{{ \Illuminate\Support\Carbon::parse($doc->created_at)->format('Y-m-d') }}</div>
-                    <p>Document Permission: {!!  ($doc->document_access == 1 ? '<span class="main-badge success-badge">Public</span>' : ($doc->document_access == 2 ? '<span class="main-badge primary-badge">Private</span>' : '<span class="main-badge warning-badge">Confidential</span>')) !!}</p>
-                    @foreach ($doc->files as $file)
-                    <form id="download-form-{{$doc->id}}-{{ $file->id }}" action="{{ route('document_finder.download', $doc->id) }}" method="post">
-                        @csrf
-                        <input name="document" type="hidden" value="{{ $doc->id }}">
-                        <input name="filename" type="hidden" value="{{ $file->file_name }}">
-                        <div class="d-flex align-items-end gap-3">
-                            <a class="text-uppercase" href="#!" onclick="document.getElementById('download-form-{{ $doc->id }}-{{ $file->id }}').submit()">{{ $file->file_name }}</a>
+                    <div class="d-flex justify-content-between">
+                        <div class="content">
+                            <h4>{{ $doc->title }}</h4>
+                            <p>Author: {{ $doc->author }}</p>
+                            <div class="mb-3">{{ \Illuminate\Support\Carbon::parse($doc->created_at)->format('Y-m-d') }}</div>
+                            <p>Document Permission: <span id="document-access-{{ $doc->id }}">
+                                {!! ($doc->document_access == 1 ? '<span class="main-badge success-badge">Public</span>' : ($doc->document_access == 2 ? '<span class="main-badge primary-badge">Private</span>' : '<span class="main-badge warning-badge">Confidential</span>')) !!}</span>
+                            </p>
+                            @foreach ($doc->files as $file)
+                            <form id="download-form-{{$doc->id}}-{{ $file->id }}" action="{{ route('document_finder.download', $doc->id) }}" method="post">
+                                @csrf
+                                <input name="document" type="hidden" value="{{ $doc->id }}">
+                                <input name="filename" type="hidden" value="{{ $file->file_name }}">
+                                <div class="d-flex align-items-end gap-3">
+                                    <a class="text-uppercase" href="#!" onclick="document.getElementById('download-form-{{ $doc->id }}-{{ $file->id }}').submit()">{{ $file->file_name }}</a>
+                                </div>
+                            </form>
+                            @endforeach
                         </div>
-                    </form>
-                    @endforeach
+                        <div class="dropdown">
+                            <a class="btn btn-light dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              Action
+                            </a>
 
+                            <ul class="dropdown-menu">
+                              <li><a id="change-permission-btn" class="dropdown-item" data-id="{{ $doc->id }}" href="#!" data-bs-toggle="modal" data-bs-target="#exampleModal">Change Permission</a></li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -97,4 +111,78 @@
         </div>
     </div>
 
+    @include('document_finder.modals.change_permission')
+
+@endsection
+@section('scripts')
+<script>
+    $(document).ready(function() {
+
+        let documentId = null;
+        $('html').on('click', '#change-permission-btn', function() {
+            documentId = $(this).attr('data-id');
+        });
+
+        $('#permission-submit').click(function() {
+            updatePermission(documentId);
+        });
+
+
+        const updatePermission = (documentId) => {
+            $.ajax({
+                    method: 'POST',
+                    url: `/api/documents/${documentId}/permission`,
+                    data: {
+                        '_token': '{{ csrf_token() }}',
+                        '_method': 'PUT',
+                        'permission': $('#permission').val()
+                    },
+                    success: function(response) {
+                        Swal.fire({
+                            title: "Success",
+                            text: "Document permission has been updated",
+                            icon: "success"
+                        });
+
+                        if(response.success) {
+
+                            let documentAccess = parseInt(response.data.document_access);
+
+                            switch (documentAccess) {
+                                case 1:
+                                    docAccess = '<span class="main-badge success-badge">Public</span>';
+                                    break;
+                                case 2:
+                                    docAccess = '<span class="main-badge primary-badge">Private</span>';
+                                    break;
+                                default:
+                                    docAccess = '<span class="main-badge warning-badge">Confidential</span>';
+                                    break;
+                            }
+
+                            $(`#document-access-${documentId}`).html(docAccess);
+
+                            $('#permission').val('') // reset
+                        }
+                    },
+                    error: function(err) {
+                        if(err.status === 422) {
+                            Swal.fire({
+                                title: "Warning",
+                                text: "Permission is required",
+                                icon: "warning"
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Warning",
+                                text: "Server Error: Try again later",
+                                icon: "warning"
+                            });
+                        }
+                    }
+                });
+        }
+
+    });
+</script>
 @endsection
