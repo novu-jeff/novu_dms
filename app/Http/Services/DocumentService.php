@@ -2,11 +2,57 @@
 
 namespace App\Http\Services;
 
+use App\Models\File;
 use App\Models\Document;
+use Illuminate\Support\Str;
+use App\Http\Requests\DocumentManagementStoreRequest;
+use App\Http\Requests\DocumentManagementUpdateRequest;
 
 class DocumentService
 {
     protected const PUBLIC_PERMISSION = 1;
+
+    public function addDocument(DocumentManagementStoreRequest $request)
+    {
+        // Create a new document
+        $document = Document::create([
+            'title' => $request['title'],
+            'author' => $request['author'],
+            'description' => $request['description'],
+            'branch_id' => $request['branch'],
+            'department_id' => $request['department'],
+            'division_id' => $request['division'],
+            'section_id' => $request['section'],
+            'document_access' => $request['permission'],
+            'tags' => $request['tags'],
+            'folder_id' => $request['folder'],
+            'doc_date' => $request['doc_date'],
+            'type' => $request['type']
+        ]);
+
+        $folder = Str::lower($request->folder);
+
+        foreach ($request->file('file') as $file) {
+            $filePath = $file->store($folder, 'public');
+
+            // Get the original name of the file
+            $originalName = $file->getClientOriginalName();
+            $fileName = Str::lower($originalName);
+
+            File::create([
+                'fileable_id' => $document->id,
+                'fileable_type' => Document::class,
+                'file_name' => $fileName,
+                'file_path' => $filePath
+            ]);
+        }
+    }
+
+    public function updateDocument(DocumentManagementUpdateRequest $request, $id)
+    {
+        $document = Document::findOrFail($id);
+        $document->update($request->validated());
+    }
 
     public function getDocumentsByYearAndMonth($payload = [])
     {
@@ -53,5 +99,10 @@ class DocumentService
         ]);
 
         return $doc;
+    }
+
+    public function getDocumentById($id)
+    {
+        return Document::findOrFail($id);
     }
 }
