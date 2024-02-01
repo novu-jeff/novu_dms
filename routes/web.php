@@ -38,6 +38,8 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 // Web API's
 Route::prefix('api')->group(function () {
     Route::put('documents/{document}/permission', [APIDocumentManagementController::class, 'updateDocumentPermission']);
+    Route::put('documents/{id}', [APIDocumentManagementController::class, 'updateDocument']);
+    Route::get('documents/{id}', [APIDocumentManagementController::class, 'getDocumentById']);
 });
 
 Route::middleware('auth')->group(function () {
