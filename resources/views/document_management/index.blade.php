@@ -265,6 +265,13 @@
                                     <label class="form-check-label" for="radio-6">
                                         Session Meeting</label>
                                 </div>
+
+                                <div class="form-check radio-style mb-20 me-3">
+                                    <input class="form-check-input"
+                                           name="type" type="radio" value="5" id="radio-6" required>
+                                    <label class="form-check-label" for="radio-6">
+                                        Executive Order</label>
+                                </div>
                             </div>
                             @error('permission')
                             <span class="invalid-feedback" role="alert">

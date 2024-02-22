@@ -28,7 +28,7 @@ class DocumentManagementUpdateRequest extends FormRequest
             'author' => 'required|max:255',
             'description' => 'required|string',
             'tags' => 'required|string',
-            'type' => 'required|in:1,2,3,4',
+            'type' => 'required|in:1,2,3,4,5',
         ];
     }
 }
