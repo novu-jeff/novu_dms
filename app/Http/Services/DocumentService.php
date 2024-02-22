@@ -5,6 +5,7 @@ namespace App\Http\Services;
 use App\Models\File;
 use App\Models\Document;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\DocumentManagementStoreRequest;
 use App\Http\Requests\DocumentManagementUpdateRequest;
 
@@ -35,15 +36,24 @@ class DocumentService
         foreach ($request->file('file') as $file) {
             $filePath = $file->store($folder, 'public');
 
+            $fullFilePath = "public/" . $filePath;
+
             // Get the original name of the file
             $originalName = $file->getClientOriginalName();
             $fileName = Str::lower($originalName);
+
+            // Get the file size in bytes
+            $fileSizeBytes = Storage::size($fullFilePath);
+
+            // Convert file size to human-readable format
+            $fileSizeReadable = $this->humanFilesize($fileSizeBytes);
 
             File::create([
                 'fileable_id' => $document->id,
                 'fileable_type' => Document::class,
                 'file_name' => $fileName,
-                'file_path' => $filePath
+                'file_path' => $filePath,
+                'file_size' => $fileSizeReadable
             ]);
         }
     }
@@ -103,6 +113,13 @@ class DocumentService
 
     public function getDocumentById($id)
     {
-        return Document::findOrFail($id);
+        return Document::with('files')->findOrFail($id);
+    }
+
+    public function humanFilesize($bytes, $decimals = 2)
+    {
+        $size = ['B','kB','MB','GB','TB','PB','EB','ZB','YB'];
+        $factor = floor((strlen($bytes) - 1) / 3);
+        return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . ' ' . @$size[$factor];
     }
 }
