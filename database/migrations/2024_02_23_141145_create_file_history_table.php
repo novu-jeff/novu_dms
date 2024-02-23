@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('file_logs', function (Blueprint $table) {
+        Schema::create('file_history', function (Blueprint $table) {
             $table->id();
             $table->foreignId('file_id')->constrained('files')->onDelete('cascade');
             $table->string('file_name');
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('file_logs');
+        Schema::dropIfExists('file_history');
     }
 };
