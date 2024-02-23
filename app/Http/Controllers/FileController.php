@@ -1,0 +1,70 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\FileUpdateRequest;
+use App\Http\Services\DocumentService;
+use App\Http\Services\FileService;
+use App\Models\File;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+
+class FileController extends Controller
+{
+    protected $fileService;
+    public function __construct(FileService $fileService)
+    {
+        $this->fileService = $fileService;
+    }
+
+    public function show(File $file)
+    {
+        return response()->json($file);
+    }
+
+    public function update(FileUpdateRequest $request, File $file)
+    {
+        DB::beginTransaction();
+        try {
+            $this->fileService->updateFile($request->validated(), $file);
+
+            DB::commit();
+            return response()->json([
+                'id' => $id,
+                'message' => 'File Deleted'
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'message' => 'Server Error'
+            ], 500);
+        }
+    }
+
+    public function destroy(File $file)
+    {
+        DB::beginTransaction();
+        try {
+            $id = $file->id;
+            $path = $file->file_path;
+
+            if (Storage::disk('public')->exists($path)) {
+                // Delete the file from the public disk
+                Storage::disk('public')->delete($path);
+            }
+
+            $file->delete();
+            DB::commit();
+            return response()->json([
+                'id' => $id,
+                'message' => 'File Deleted'
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'message' => 'Server Error'
+            ], 500);
+        }
+    }
+}

@@ -67,7 +67,7 @@ class FolderController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:folders',
             'branch' => 'required',
             'department' => 'required',
             'division' => 'required',

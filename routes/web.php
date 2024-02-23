@@ -7,6 +7,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentFinderController;
 use App\Http\Controllers\DocumentManagementController;
 use App\Http\Controllers\Api\DocumentManagementController as APIDocumentManagementController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\FolderController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SectionController;
@@ -71,5 +72,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/document-finder', [DocumentFinderController::class, 'index'])->name('document_finder.index');
     Route::post('/document-finder/download/{document}', [DocumentFinderController::class, 'download'])->name('document_finder.download');
-});
 
+    // Files
+    Route::get('/files/{file}', [FileController::class, 'show']);
+    Route::delete('/files/{file}', [FileController::class, 'destroy']);
+});
