@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Models\File;
 use App\Models\Document;
+use App\Models\FileHistory;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
@@ -25,22 +26,19 @@ class FileService
         $originalName = $file->getClientOriginalName();
         $fileName = Str::lower($originalName);
 
-        File::create([
+        return File::create([
             'fileable_id' => $documentId,
             'fileable_type' => Document::class,
             'file_name' => $fileName,
             'file_path' => $filePath,
-            'file_size' => $fileSizeReadable
+            'file_size' => $fileSizeReadable,
+            'uploaded_by' => auth()->id()
         ]);
     }
 
-    public function updateFile(array $payload = [], $file)
+    public function updateFile($file, array $payload = [])
     {
-        // TODO: Add the old version to logs
-        $id = $file->id;
-        $path = $file->file_path;
-
-        // FileLogs::create([]);
+        $this->saveFileHistory($file);
 
         // Set up for update
         $folder = $payload['folder'];
@@ -56,19 +54,38 @@ class FileService
         $fileSizeReadable = $this->humanFilesize($fileSizeBytes);
 
         // Get the original name of the file
-        $originalName = $file->getClientOriginalName();
+        $originalName = $payload['file']->getClientOriginalName();
         $fileName = Str::lower($originalName);
 
         $documentId = $payload['document'];
 
+        $addVersion = $file->file_version + 1;
+
         // Update the file
-        $file->update([
+        return tap($file->update([
             'fileable_id' => $documentId,
             'fileable_type' => Document::class,
             'file_name' => $fileName,
             'file_path' => $filePath,
-            'file_size' => $fileSizeReadable
+            'file_size' => $fileSizeReadable,
+            'file_version' => $addVersion
+        ]));
+    }
+
+    public function saveFileHistory($file)
+    {
+        // Save Old File To Logs
+        $oldFileToSave = array_merge($file->toArray(), [
+            'uploaded_at' => $file->created_at,
+            'uploaded_by' => auth()->id(),
+            'file_id' => $file->id
         ]);
+
+        unset($oldFileToSave['id']);
+        unset($oldFileToSave['created_at']);
+        unset($oldFileToSave['updated_at']);
+
+        FileHistory::create($oldFileToSave);
     }
 
     public function humanFilesize($bytes, $decimals = 2)

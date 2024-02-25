@@ -38,10 +38,10 @@ class DocumentManagementController extends Controller
             return response()->json([
                 'message' => 'Document Added'
             ], 200);
-        } catch (\Exception $exception) {
+        } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
-                'message' => 'Server Error'
+                'message' => config('app.env') == 'local' ? $e->getMessage() : 'Server Error'
             ], 500);
         }
     }

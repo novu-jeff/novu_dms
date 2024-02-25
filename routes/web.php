@@ -74,6 +74,5 @@ Route::middleware('auth')->group(function () {
     Route::post('/document-finder/download/{document}', [DocumentFinderController::class, 'download'])->name('document_finder.download');
 
     // Files
-    Route::get('/files/{file}', [FileController::class, 'show']);
-    Route::delete('/files/{file}', [FileController::class, 'destroy']);
+    Route::resource('files', FileController::class)->except(['index', 'create', 'edit']);
 });

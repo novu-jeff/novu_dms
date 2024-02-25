@@ -14,8 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('files', function (Blueprint $table) {
-            $table->foreignId('uploaded_by')->constrained('users')->nullOnDelete();
             $table->integer('file_version')->after('file_size')->default(1);
+            $table->foreignId('uploaded_by')->after('file_version')->nullable()->constrained('users')->nullOnDelete();
         });
     }
 

@@ -112,7 +112,7 @@
                                 </g>
                                 </svg>
                                 Change Permission</a></li>
-                                <li><a id="manage-files-btn" class="dropdown-item" data-id="{{ $doc->id }}" href="#!" data-bs-toggle="modal" data-bs-target="#manage-files-modal"><?xml version="1.0" encoding="utf-8"?>
+                                <li><a id="manage-files-btn" class="dropdown-item" data-document-id="{{ $doc->id }}" data-folder-id="{{ $doc->folder_id }}" data-id="{{ $doc->id }}" href="#!" data-bs-toggle="modal" data-bs-target="#manage-files-modal"><?xml version="1.0" encoding="utf-8"?>
                                     <!-- Generator: Adobe Illustrator 22.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"  width="16" height="16">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
@@ -144,6 +144,8 @@
     @include('document_finder.modals.change_permission')
     @include('document_finder.modals.edit')
     @include('document_finder.modals.manage_files')
+    @include('document_finder.modals.update_file')
+    @include('document_finder.modals.upload_file')
 
 @endsection
 @section('scripts')
@@ -153,7 +155,13 @@
         let changePermissionModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('exampleModal'));
         let editModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('editModal'));
 
+        let fileId = null;
+        let fileName = null;
+        let docId = null;
+        let folderId = null;
+        let updateFileModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('update-files-modal'));
         let documentId = null;
+
         $('html').on('click', '#change-permission-btn', function() {
             documentId = $(this).attr('data-id');
         });
@@ -321,6 +329,7 @@
         // Manage File Modal
         $('html').on('click', '#manage-files-btn', function() {
             documentId = $(this).attr('data-id');
+            folderId = $(this).attr('data-folder-id');
 
             $.ajax({
                     method: 'GET',
@@ -353,7 +362,7 @@
                                         </button>
                                     </div>
                                     </form>
-                                    <button data-id="${file.id}" class="btn btn-warning btn-sm me-1 edit-file-button">
+                                    <button data-document-id="${document.id}" data-folder-id="${document.folder_id}" data-file-name="${file.file_name}" data-id="${file.id}" class="btn btn-warning btn-sm me-1 edit-file-button" data-bs-toggle="modal" data-bs-target="#update-files-modal">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="16" height="16">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                                         </svg>
@@ -388,12 +397,149 @@
                 });
         });
 
+        // Store File
+        $('#upload-file-submit').click(function (){
+
+            let myForm = document.getElementById('upload-files-form');
+            var formData = new FormData(myForm);
+            formData.append('document', documentId)
+            formData.append('folder', folderId)
+
+            // Remove validations
+            $('#upload-files-modal input').removeClass('is-invalid');
+            $('#upload-files-modal .text-error').addClass('d-none');
+
+            //
+            $.ajax({
+                method: 'POST',
+                url: `/files`,
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function(response) {
+                    updateFileModal.hide();
+                    Swal.fire({
+                        icon: "success",
+                        title: "Success!",
+                        text: "Your file has been added.",
+                    willClose: () => {
+                        window.location.reload();
+                    }
+                    }).then((result) => {
+                        if (result.dismiss) {
+                            window.location.reload();
+                        }
+                    });
+
+                },
+                error: function(err) {
+                    let hasFileFormatError = false;
+
+                    if(err.status === 422) {
+                        var errors = err.responseJSON.errors;
+                        $.each(errors, function(key, value) {
+                            // Display validation errors
+                            $('#upload-files-modal #' + key).addClass('is-invalid');
+                            $('#upload-files-modal #' + key + '_error').text(value).removeClass('d-none');
+
+                            if (key.startsWith('file') && value != 'The file field is required.') {
+                                hasFileFormatError = true;
+                            }
+                        });
+
+                        if(hasFileFormatError) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Oops!',
+                                text: 'The file(s) must be a file of type: jpeg, png, pdf, docx.'
+                            });
+                        }
+
+                    } else {
+                        updateFileModal.hide();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops!',
+                            text: 'Something went wrong, try again.'
+                        });
+                    }
+                }
+            });
+            //
+
+        })
+
         // Edit File
-        let fileId = null;
-        $('html').on('click', '.edit-file-button', function() {
+        $('html').on('click', '.edit-file-button', function () {
             fileId = $(this).attr('data-id');
-            alert(fileId)
+            fileName = $(this).attr('data-file-name');
+            docId = $(this).attr('data-document-id');
+            folderId = $(this).attr('data-folder-id');
+
+            $('#file-name-to-update').html(fileName);
         });
+
+
+        // Update File
+        $('#update-file-submit').click(function (){
+
+            let myForm = document.getElementById('update-files-form');
+            var formData = new FormData(myForm);
+            formData.append('_method', 'PUT');
+            formData.append('document', docId)
+            formData.append('folder', folderId)
+
+            // Remove validations
+            $('#update-files-modal input').removeClass('is-invalid');
+            $('#update-files-modal .text-error').addClass('d-none');
+
+            //
+            $.ajax({
+                method: 'POST',
+                url: `/files/${fileId}`,
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function(response) {
+                    updateFileModal.hide();
+                    Swal.fire({
+                        icon: "success",
+                        title: "Updated!",
+                        text: "Your file has been updated.",
+                    willClose: () => {
+                        window.location.reload();
+                    }
+                    }).then((result) => {
+                        if (result.dismiss) {
+                            window.location.reload();
+                        }
+                    });
+
+                },
+                error: function(err) {
+                    if(err.status === 422) {
+                        var errors = err.responseJSON.errors;
+                        $.each(errors, function(key, value) {
+                            // Display validation errors
+                            $('#update-files-modal #' + key).addClass('is-invalid');
+                            $('#update-files-modal #' + key + '_error').text(value).removeClass('d-none');
+                        });
+
+                    } else {
+                        updateFileModal.hide();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops!',
+                            text: 'Something went wrong, try again.'
+                        });
+                    }
+                }
+            });
+            //
+
+        })
 
         // Delete File
         $('html').on('click', '.delete-file-button', function() {

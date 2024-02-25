@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\FileStoreRequest;
 use App\Http\Requests\FileUpdateRequest;
 use App\Http\Services\DocumentService;
 use App\Http\Services\FileService;
@@ -18,6 +19,30 @@ class FileController extends Controller
         $this->fileService = $fileService;
     }
 
+    public function store(FileStoreRequest $request)
+    {
+        DB::beginTransaction();
+        try {
+            foreach ($request->file('file') as $file) {
+                $this->fileService->uploadFile(
+                    $file,
+                    $request->folder,
+                    $request->document
+                );
+            }
+
+            DB::commit();
+            return response()->json([
+                'message' => 'File Uploaded'
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'message' => config('app.env') == 'local' ? $e->getMessage() : 'Server Error'
+            ], 500);
+        }
+    }
+
     public function show(File $file)
     {
         return response()->json($file);
@@ -27,17 +52,16 @@ class FileController extends Controller
     {
         DB::beginTransaction();
         try {
-            $this->fileService->updateFile($request->validated(), $file);
-
+            $data = $this->fileService->updateFile($file, $request->validated());
             DB::commit();
             return response()->json([
-                'id' => $id,
+                'data' => $data,
                 'message' => 'File Deleted'
             ], 200);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
-                'message' => 'Server Error'
+                'message' => config('app.env') == 'local' ? $e->getMessage() : 'Server Error'
             ], 500);
         }
     }
@@ -63,7 +87,7 @@ class FileController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
-                'message' => 'Server Error'
+                'message' => config('app.env') == 'local' ? $e->getMessage() : 'Server Error'
             ], 500);
         }
     }
