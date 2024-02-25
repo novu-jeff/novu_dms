@@ -152,6 +152,16 @@
 <script>
     $(document).ready(function() {
 
+        // When the nested modal is hidden, show the parent modal again
+        $('#update-files-modal').on('hidden.bs.modal', function () {
+            $('#manage-files-modal').modal('show');
+        });
+
+        // When the nested modal is hidden, show the parent modal again
+        $('#upload-files-modal').on('hidden.bs.modal', function () {
+            $('#manage-files-modal').modal('show');
+        });
+
         let changePermissionModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('exampleModal'));
         let editModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('editModal'));
 
@@ -160,6 +170,8 @@
         let docId = null;
         let folderId = null;
         let updateFileModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('update-files-modal'));
+        let uploadFileModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('upload-files-modal'));
+
         let documentId = null;
 
         $('html').on('click', '#change-permission-btn', function() {
@@ -418,7 +430,6 @@
                 processData: false,
                 data: formData,
                 success: function(response) {
-                    updateFileModal.hide();
                     Swal.fire({
                         icon: "success",
                         title: "Success!",
@@ -457,7 +468,7 @@
                         }
 
                     } else {
-                        updateFileModal.hide();
+                        uploadFileModal.hide();
                         Swal.fire({
                             icon: 'error',
                             title: 'Oops!',
@@ -503,7 +514,6 @@
                 processData: false,
                 data: formData,
                 success: function(response) {
-                    updateFileModal.hide();
                     Swal.fire({
                         icon: "success",
                         title: "Updated!",

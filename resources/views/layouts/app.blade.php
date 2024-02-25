@@ -126,7 +126,6 @@
 @vite('resources/js/app.js')
 <script src="{{ asset('js/main.js') }}"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="https://raw.githubusercontent.com/cowboy/jquery-throttle-debounce/v1.1/jquery.ba-throttle-debounce.min.js"></script>
 </script>
 <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
