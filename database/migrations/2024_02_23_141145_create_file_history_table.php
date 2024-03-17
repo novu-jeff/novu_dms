@@ -13,13 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('folders', function (Blueprint $table) {
+        Schema::create('file_history', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->foreignId('branch_id')->constrained('branches');
-            $table->foreignId('department_id')->constrained('departments');
-            $table->foreignId('division_id')->constrained('divisions');
-            $table->foreignId('section_id')->constrained('sections');
+            $table->foreignId('file_id')->constrained('files')->onDelete('cascade');
+            $table->string('file_name');
+            $table->string('file_path');
+            $table->foreignId('uploaded_by')->nullable()->constrained('users');
+
+            $table->timestamp('uploaded_at');
             $table->timestamps();
         });
     }
@@ -31,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('folders');
+        Schema::dropIfExists('file_history');
     }
 };

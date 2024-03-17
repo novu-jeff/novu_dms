@@ -36,7 +36,7 @@ class BranchController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'description' => 'required|string|max:255',
+            'description' => 'required|string|max:255|unique:branches',
         ]);
 
         DB::beginTransaction();

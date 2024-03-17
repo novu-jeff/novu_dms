@@ -55,7 +55,7 @@ class DocumentManagementController extends Controller
                 'data' => $document,
                 'success' => true
             ], 200);
-        } catch (\Exception $th) {
+        } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
                 'error' => env('APP_ENV') === 'local' ? $e->getMessage() : 'Server Error: Contact Administrator',

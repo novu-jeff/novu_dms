@@ -61,7 +61,7 @@ class SectionController extends Controller
         $request->validate([
             'department' => 'required|max:255',
             'division' => 'required|max:255',
-            'description' => 'required|string|max:255',
+            'description' => 'required|string|max:255|unique:sections',
         ]);
 
         DB::beginTransaction();

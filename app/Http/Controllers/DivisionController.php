@@ -43,7 +43,7 @@ class DivisionController extends Controller
     {
         $request->validate([
             'department' => 'required|max:255',
-            'description' => 'required|string|max:255',
+            'description' => 'required|string|max:255|unique:divisions',
         ]);
 
         DB::beginTransaction();

@@ -24,19 +24,20 @@ class DocumentManagementStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|max:255',
-            'author' => 'required|max:255',
-            'description' => 'required|string',
-            'branch' => 'required|exists:branches,id',
-            'department' => 'required|exists:departments,id',
-            'division' => 'required|exists:divisions,id',
-            'section' => 'required|exists:sections,id',
-            'permission' => 'required|in:1,2,3',
-            'tags' => 'required|string',
-            'type' => 'required|in:1,2,3,4,5',
-            'doc_date' => 'required|date',
-            'folder' => 'required',
-            'file.*' => 'required|mimes:jpeg,png,pdf,docx',
+            'title' => ['required', 'string', 'max:255', 'unique:documents'],
+            'author' => ['required', 'max:255'],
+            'description' => ['required', 'string'],
+            'branch' => ['required', 'exists:branches,id'],
+            'department' => ['required', 'exists:departments,id'],
+            'division' => ['required', 'exists:divisions,id'],
+            'section' => ['required', 'exists:sections,id'],
+            'permission' => ['required', 'in:1,2,3'],
+            'tags' => ['required', 'string'],
+            'type' => ['required', 'in:1,2,3,4,5'],
+            'doc_date' => ['required', 'date'],
+            'folder' => ['required'],
+            'file' => ['required', 'array'],
+            'file.*' => ['required', 'mimes:jpeg,png,pdf,docx']
         ];
     }
 }

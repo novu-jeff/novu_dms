@@ -21,37 +21,6 @@
         <div class="card-style-3 mb-30">
             <div class="card-content">
 
-                @if ($message = Session::get('success'))
-                <div class="alert alert-success d-flex align-items-center" role="alert">
-                    <?xml version="1.0" encoding="utf-8"?>
-                    <!-- Generator: Adobe Illustrator 22.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-                    <svg class="text-success me-2" fill="#1C2033" width="24" height="24" version="1.1" id="lni_lni-checkmark-circle" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                         x="0px" y="0px" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64;" xml:space="preserve">
-                    <g>
-                        <path d="M32,1.8C15.3,1.8,1.8,15.3,1.8,32S15.3,62.3,32,62.3S62.3,48.7,62.3,32S48.7,1.8,32,1.8z M32,57.8
-                            C17.8,57.8,6.3,46.2,6.3,32C6.3,17.8,17.8,6.3,32,6.3c14.2,0,25.8,11.6,25.8,25.8C57.8,46.2,46.2,57.8,32,57.8z"/>
-                        <path d="M40.6,22.7L28.7,34.3L23.3,29c-0.9-0.9-2.3-0.8-3.2,0c-0.9,0.9-0.8,2.3,0,3.2l6.4,6.2c0.6,0.6,1.4,0.9,2.2,0.9
-                            c0.8,0,1.6-0.3,2.2-0.9L43.8,26c0.9-0.9,0.9-2.3,0-3.2S41.5,21.9,40.6,22.7z"/>
-                    </g>
-                    </svg>
-
-                    <div>
-                      {{ $message }}
-                    </div>
-                  </div>
-                @endif
-
-                    @if ($message = Session::get('error'))
-                        <div class="alert-box danger-alert">
-                            <div class="alert">
-                                <h4 class="alert-heading">Error</h4>
-                                <p class="text-medium">
-                                    {{ $message }}
-                                </p>
-                            </div>
-                        </div>
-                    @endif
-
                 <form id="document_form" action="{{ route('documents.store') }}" enctype="multipart/form-data" method="POST">
                     @csrf
 
@@ -59,43 +28,32 @@
                         <div class="col-12">
                             <div class="input-style-1">
                                 <label for="title">{{ __('Document Title') }}</label>
-                                <input type="text" @error('title') class="form-control is-invalid" @enderror name="title"
+                                <input type="text" class="form-control" name="title"
                                        id="title"
-                                       value="" required autofocus>
-                                @error('title')
-                                <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                       value="" autofocus>
+                                <span id="title_error" class="text-error text-danger d-none" role="alert"></span>
                             </div>
                         </div>
 
                         <div class="col-12">
                             <div class="input-style-1">
                                 <label for="author">{{ __('Author') }}</label>
-                                <input type="text" @error('author') class="form-control is-invalid" @enderror name="author"
+                                <input type="text" class="form-control"
+                                       name="author"
                                        id="author"
-                                       value="" required>
-                                @error('author')
-                                <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                       value="">
+                                <span id="author_error" class="text-error text-danger d-none" role="alert"></span>
                             </div>
                         </div>
 
                         <div class="col-12">
                             <div class="input-style-1">
                                 <label for="description">{{ __('Description') }}</label>
-                                <textarea type="text" @error('description') class="form-control is-invalid" @enderror name="description"
+                                <textarea type="text" class="form-control" name="description"
                                     rows="3"
                                     id="description"
-                                    value="" required></textarea>
-                                @error('description')
-                                <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                    value=""></textarea>
+                                <span id="description_error" class="text-error text-danger d-none" role="alert"></span>
                             </div>
                         </div>
                         <!-- end col -->
@@ -107,7 +65,7 @@
                                     <div class="select-style-1">
                                         <label for="branch">{{ __('Branch') }}</label>
                                         <div class="select-position">
-                                            <select name="branch" id="branch" required>
+                                            <select name="branch" id="branch">
                                                 <option value="" selected disabled>Choose branch</option>
                                                 @forelse($branches as $branch)
                                                     <option value="{{ $branch->id }}">{{ $branch->description }}</option>
@@ -115,11 +73,7 @@
                                                 @endforelse
                                             </select>
                                         </div>
-                                        @error('branch')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                        @enderror
+                                        <span id="branch_error" class="text-error text-danger d-none" role="alert"></span>
                                     </div>
                                 </div>
                             </div>
@@ -129,15 +83,11 @@
                                     <div class="select-style-1">
                                         <label for="department">{{ __('Department') }}</label>
                                         <div class="select-position">
-                                            <select name="department" id="department" required>
+                                            <select name="department" id="department">
                                                 <option value="">Choose department</option>
                                             </select>
                                         </div>
-                                        @error('department')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                        @enderror
+                                        <span id="department_error" class="text-error text-danger d-none" role="alert"></span>
                                     </div>
                                 </div>
                             </div>
@@ -152,15 +102,11 @@
                                     <div class="select-style-1">
                                         <label for="division">{{ __('Division') }}</label>
                                         <div class="select-position">
-                                            <select name="division" id="division" required>
+                                            <select name="division" id="division">
                                                 <option value="">Choose division</option>
                                             </select>
                                         </div>
-                                        @error('division')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                        @enderror
+                                        <span id="division_error" class="text-error text-danger d-none" role="alert"></span>
                                     </div>
                                 </div>
                             </div>
@@ -170,15 +116,11 @@
                                     <div class="select-style-1">
                                         <label for="section">{{ __('Section') }}</label>
                                         <div class="select-position">
-                                            <select name="section" id="section" required>
+                                            <select name="section" id="section">
                                                 <option value="">Choose section</option>
                                             </select>
                                         </div>
-                                        @error('section')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                        @enderror
+                                        <span id="section_error" class="text-error text-danger d-none" role="alert"></span>
                                     </div>
                                 </div>
                             </div>
@@ -191,46 +133,38 @@
                                 <div class="form-check radio-style mb-20 me-3">
                                     <input class="form-check-input"
                                            name="permission"
-                                           type="radio" value="1" id="radio-1" required>
+                                           type="radio" value="1" id="radio-1">
                                     <label class="form-check-label" for="radio-1">
                                         Public</label>
                                 </div>
 
                                 <div class="form-check radio-style mb-20 me-3">
                                     <input class="form-check-input"
-                                           name="permission" type="radio" value="2" id="radio-2" required>
+                                           name="permission" type="radio" value="2" id="radio-2">
                                     <label class="form-check-label" for="radio-2">
                                         Private</label>
                                 </div>
 
                                 <div class="form-check radio-style mb-20 me-3">
                                     <input class="form-check-input"
-                                           name="permission" type="radio" value="3" id="radio-2" required>
+                                           name="permission" type="radio" value="3" id="radio-2">
                                     <label class="form-check-label" for="radio-2">
                                         Confidential</label>
                                 </div>
                             </div>
-                            @error('permission')
-                            <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                            @enderror
+                            <span id="permission_error" class="text-error text-danger d-none" role="alert"></span>
                         </div>
 
                         <div class="col-12">
                             <div class="input-style-1">
                                 <label for="tags">{{ __('Tags') }}</label>
-                                <input type="text" @error('tags') class="form-control is-invalid" @enderror name="tags"
+                                <input type="text" class="form-control" name="tags"
                                        id="tags"
-                                       value="" required>
+                                       value="">
                                 <div id="tagsHelpBlock" class="form-text">
                                     Indicate multiple tags by comma seperated values e.g. (tag1, tag2, tag3)
                                 </div>
-                                @error('tags')
-                                <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                <span id="tags_error" class="text-error text-danger d-none" role="alert"></span>
                             </div>
                         </div>
 
@@ -240,59 +174,51 @@
                                 <div class="form-check radio-style mb-20 me-3">
                                     <input class="form-check-input"
                                            name="type"
-                                           type="radio" value="1" id="radio-4" required>
+                                           type="radio" value="1" id="radio-4">
                                     <label class="form-check-label" for="radio-4">
                                         Committee Report</label>
                                 </div>
 
                                 <div class="form-check radio-style mb-20 me-3">
                                     <input class="form-check-input"
-                                           name="type" type="radio" value="2" id="radio-5" required>
+                                           name="type" type="radio" value="2" id="radio-5">
                                     <label class="form-check-label" for="radio-5">
                                         Resolution</label>
                                 </div>
 
                                 <div class="form-check radio-style mb-20 me-3">
                                     <input class="form-check-input"
-                                           name="type" type="radio" value="3" id="radio-6" required>
+                                           name="type" type="radio" value="3" id="radio-6">
                                     <label class="form-check-label" for="radio-6">
                                         Ordinance</label>
                                 </div>
 
                                 <div class="form-check radio-style mb-20 me-3">
                                     <input class="form-check-input"
-                                           name="type" type="radio" value="4" id="radio-6" required>
+                                           name="type" type="radio" value="4" id="radio-6">
                                     <label class="form-check-label" for="radio-6">
                                         Session Meeting</label>
                                 </div>
 
                                 <div class="form-check radio-style mb-20 me-3">
                                     <input class="form-check-input"
-                                           name="type" type="radio" value="5" id="radio-6" required>
+                                           name="type" type="radio" value="5" id="radio-6">
                                     <label class="form-check-label" for="radio-6">
                                         Executive Order</label>
                                 </div>
                             </div>
-                            @error('permission')
-                            <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                            @enderror
+                            <span id="type_error" class="text-error text-danger d-none" role="alert"></span>
                         </div>
 
                             <div class="col-12">
                                 <div class="select-style-1">
                                     <label for="folder">{{ __('Folder') }}</label>
                                     <div class="select-position">
-                                        <select name="folder" required>
-                                          <option value="" disabled selected>Select folder</option>
+                                        <select id="folder" name="folder">
+                                          <option disabled selected>Select folder</option>
                                         </select>
                                     </div>
-                                    @error('folder')
-                                    <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
+                                    <span id="folder_error" class="text-error text-danger d-none" role="alert"></span>
                                 </div>
                             </div>
                         </div>
@@ -300,38 +226,29 @@
                         <div class="col-12">
                             <div class="input-style-1">
                                 <label for="file">{{ __('Document Date') }}</label>
-                                <input id="date" type="date" @error('date') class="form-control is-invalid" @enderror name="doc_date"
-                                       id="date"
-                                       value="" required>
-                                @error('date')
-                                <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                <input id="doc_date" type="date" class="form-control" name="doc_date"
+                                       value="">
+                                <span id="doc_date_error" class="text-error text-danger d-none" role="alert"></span>
                             </div>
                         </div>
 
                         <div class="col-12">
                             <div class="input-style-1">
                                 <label for="file">{{ __('Upload') }}</label>
-                                <input id="file_upload" type="file" @error('file') class="form-control is-invalid" @enderror name="file[]"
+                                <input type="file" class="form-control" name="file[]"
                                        id="file"
-                                       value="" required multiple>
+                                       value="" multiple>
                                 <div id="fileHelpBlock" class="form-text">
                                     Supported file formats e.g(jpeg, png, pdf, docx)
                                 </div>
-                                @error('file')
-                                <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                <span id="file_error" class="text-error text-danger d-none" role="alert"></span>
                             </div>
                         </div>
 
                         <!-- end col -->
                         <div class="col-12">
                             <div class="button-group d-flex justify-content-center flex-wrap">
-                                <button id="submit-btn" type="button" class="main-btn primary-btn btn-hover w-100 text-center">
+                                <button id="submit-btn" type="submit" class="main-btn primary-btn btn-hover w-100 text-center">
                                     {{ __('Submit') }}
                                 </button>
                             </div>
@@ -346,6 +263,7 @@
 @section('scripts')
 <script>
     $(document).ready(function () {
+
         $('select[name="branch"]').change(e => {
             let branch = e.target.value;
 
@@ -464,79 +382,90 @@
 
 
         // When submit button is clicked show loader
-        $('#submit-btn').click(e => {
+        $('#document_form').submit(e => {
             e.preventDefault()
 
-            // Flag to check if any non-file input is empty
-            let anyEmpty = false;
+            // Serialize the form data
+            let myForm = document.getElementById('document_form');
+            var formData = new FormData(myForm);
 
-            // Iterate through all input elements
-            $('input, select').each(function () {
-                // Check if the input is not a file input and is empty or if it's a radio input and none are checked
-                if (
-                    ($(this).attr('type') !== 'file' && !$(this).val()) ||
-                    (
-                        $(this).attr('type') === 'radio' &&
-                        !$(':radio[name="' + $(this).attr('name') + '"]:checked').length &&
-                        ($(this).attr('name') === 'permission' || $(this).attr('name') === 'type')
-                    )
-                ) {
-                    anyEmpty = true;
-                    return false; // Exit the loop early if any empty non-file input or unchecked required radio input is found
+            // Remove existing validation error classes
+            $('textarea').removeClass('is-invalid');
+            $('select').removeClass('border-danger');
+            $('input,select,textarea .form-control').removeClass('is-invalid');
+            $('.text-error').addClass('d-none');
+
+            $.ajax({
+                url: '{{ route('documents.store') }}',
+                method: 'POST',
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function(response) {
+
+                    Swal.fire({
+                    icon: "success",
+                    title: "Success!",
+                    text: "A new document has been added.",
+                    willClose: () => {
+                        window.location.reload();
+                    }
+                    }).then((result) => {
+                        if (result.dismiss) {
+                            window.location.reload();
+                        }
+                    });
+
+                },
+                error: function(err) {
+
+                    if(err.status === 422) {
+                        var errors = err.responseJSON.errors;
+
+                        let hasFileFormatError = false;
+                        let hasValidationError = false;
+
+                        $.each(errors, function(key, value) {
+                            // Display validation errors
+                            $('#' + key).addClass('is-invalid');
+                            $('select#' + key).addClass('border-danger');
+
+                            $('#' + key + '_error').text(value).removeClass('d-none');
+
+                            hasValidationError = true;
+
+                            if (key.startsWith('file') && value != 'The file field is required.') {
+                                hasFileFormatError = true;
+                            }
+                        });
+
+                        if(hasFileFormatError) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Oops!',
+                                text: 'The file(s) must be a file of type: jpeg, png, pdf, docx.'
+                            });
+                        }
+
+                        if(hasFileFormatError === false && hasValidationError) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops!',
+                                text: 'Please check your form for validation fields.'
+                            });
+                        }
+
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops!',
+                            text: 'Something went wrong, try again.'
+                        });
+                    }
+
                 }
-            });
-
-
-            // If any non-file input is empty, show a warning
-            if (anyEmpty) {
-                Swal.fire({
-                    title: "Oops!",
-                    text: "Please fill out all the required information.",
-                    icon: "warning"
-                });
-                return false;
-            }
-
-            let files = $('#file_upload')[0].files;
-
-            // Check if there are files
-            if (files.length === 0) {
-                Swal.fire(
-                    'Oops!',
-                    'Please select at least one file.',
-                    'warning'
-                );
-                return false;
-            }
-
-            // Check each file for supported formats
-            for (let i = 0; i < files.length; i++) {
-                let fileType = files[i].type;
-                let supportedFormats = ['image/jpeg', 'image/png', 'application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-
-                // Check if file type is supported
-                if (!supportedFormats.includes(fileType)) {
-                    Swal.fire(
-                        'Oops!',
-                        'File type is not supported for one or more selected files.',
-                        'warning'
-                    );
-                    return false;
-                }
-            }
-
-            // Show Loader
-            swal.fire({
-                html: '<h5>Please wait while the form is processing...</h5>',
-                showConfirmButton: false,
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                didOpen: () => Swal.showLoading()
-            });
-
-            // Proceeds to process the submit
-            document.getElementById('document_form').submit(); // Submit form
-
+            })
         })
 
 

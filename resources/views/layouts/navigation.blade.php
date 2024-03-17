@@ -1,4 +1,5 @@
 <ul>
+    <!--
     <li class="nav-item @if(request()->routeIs('home')) active @endif">
         <a href="{{ route('home') }}">
               <span class="icon">
@@ -11,6 +12,7 @@
             <span class="text">{{ __('Dashboard') }}</span>
         </a>
     </li>
+    -->
 
     <li class="nav-item @if(request()->routeIs('document_management.index')) active @endif">
         <a href="{{ route('document_management.index') }}">

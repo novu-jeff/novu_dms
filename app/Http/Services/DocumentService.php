@@ -2,15 +2,24 @@
 
 namespace App\Http\Services;
 
+use Carbon\Carbon;
 use App\Models\File;
 use App\Models\Document;
 use Illuminate\Support\Str;
+use App\Http\Services\FileService;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\DocumentManagementStoreRequest;
 use App\Http\Requests\DocumentManagementUpdateRequest;
 
 class DocumentService
 {
+    protected $fileService;
     protected const PUBLIC_PERMISSION = 1;
+
+    public function __construct(FileService $fileService)
+    {
+        $this->fileService = $fileService;
+    }
 
     public function addDocument(DocumentManagementStoreRequest $request)
     {
@@ -33,18 +42,7 @@ class DocumentService
         $folder = Str::lower($request->folder);
 
         foreach ($request->file('file') as $file) {
-            $filePath = $file->store($folder, 'public');
-
-            // Get the original name of the file
-            $originalName = $file->getClientOriginalName();
-            $fileName = Str::lower($originalName);
-
-            File::create([
-                'fileable_id' => $document->id,
-                'fileable_type' => Document::class,
-                'file_name' => $fileName,
-                'file_path' => $filePath
-            ]);
+            $this->fileService->uploadFile($file, $folder, $document->id);
         }
     }
 
@@ -103,6 +101,6 @@ class DocumentService
 
     public function getDocumentById($id)
     {
-        return Document::findOrFail($id);
+        return Document::with('files')->findOrFail($id);
     }
 }

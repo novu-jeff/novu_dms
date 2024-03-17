@@ -35,11 +35,14 @@ class DocumentManagementController extends Controller
             $this->documentService->addDocument($request);
 
             DB::commit();
-            // Redirect to the index page or show a success message
-            return redirect('/document-management')->with('success', 'A new document has been added successfully.');
-        } catch (\Exception $exception) {
+            return response()->json([
+                'message' => 'Document Added'
+            ], 200);
+        } catch (\Exception $e) {
             DB::rollback();
-            return redirect('/document-management')->with('error', $exception->getMessage());
+            return response()->json([
+                'message' => config('app.env') == 'local' ? $e->getMessage() : 'Server Error'
+            ], 500);
         }
     }
 }
