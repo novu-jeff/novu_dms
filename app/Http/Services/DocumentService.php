@@ -54,11 +54,11 @@ class DocumentService
 
     public function getDocumentsByYearAndMonth($payload = [])
     {
-        $year = isset($payload['year']) ? $payload['year'] : null;
-        $month = isset($payload['month']) ? $payload['month'] : null;
-        $type = isset($payload['type']) ? $payload['type'] : null;
-        $tags = isset($payload['tags']) ? $payload['tags'] : null;
-        $docDate = isset($payload['doc_date']) ? $payload['doc_date'] : null;
+        $year = isset($payload['year']) && $payload['year'] != "null" ? $payload['year'] : null;
+        $month = isset($payload['month']) && $payload['month'] != "null" ? $payload['month'] : null;
+        $type = isset($payload['type']) && $payload['type'] != "null" ? $payload['type'] : null;
+        $tags = isset($payload['tags']) && $payload['tags'] != "null" ? $payload['tags'] : null;
+        $docDate = isset($payload['doc_date']) && $payload['doc_date'] != "null" ? $payload['doc_date'] : null;
 
         $documents = Document::when(isset($year), function ($query) use ($year) {
             $query->whereYear('created_at', '=', $year);
