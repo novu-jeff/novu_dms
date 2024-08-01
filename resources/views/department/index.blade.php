@@ -22,7 +22,7 @@
         <div class="d-flex justify-content-between align-items-center">
             <div>
                 <div class="title mb-30">
-                    <h2>{{ __('Folder Management') }}</h2>
+                    <h2>{{ __('Department Management') }}</h2>
                 </div>
             </div>
             <div>
