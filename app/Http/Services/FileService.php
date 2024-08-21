@@ -12,12 +12,10 @@ class FileService
 {
     public function uploadFile($file, $folder, $documentId)
     {
-        $filePath = $file->store($folder, 'public');
-
-        $fullFilePath = "public/" . $filePath;
+        $filePath = $file->store($folder, config('filesystems.default'));
 
         // Get the file size in bytes
-        $fileSizeBytes = Storage::size($fullFilePath);
+        $fileSizeBytes = Storage::disk(config('filesystems.default'))->size($filePath);
 
         // Convert file size to human-readable format
         $fileSizeReadable = $this->humanFilesize($fileSizeBytes);
@@ -43,12 +41,10 @@ class FileService
         // Set up for update
         $folder = $payload['folder'];
 
-        $filePath = $payload['file']->store($folder, 'public');
-
-        $fullFilePath = "public/" . $filePath;
+        $filePath = $payload['file']->store($folder, config('filesystems.default'));
 
         // Get the file size in bytes
-        $fileSizeBytes = Storage::size($fullFilePath);
+        $fileSizeBytes = Storage::disk(config('filesystems.default'))->size($filePath);
 
         // Convert file size to human-readable format
         $fileSizeReadable = $this->humanFilesize($fileSizeBytes);

@@ -73,9 +73,9 @@ class FileController extends Controller
             $id = $file->id;
             $path = $file->file_path;
 
-            if (Storage::disk('public')->exists($path)) {
+            if (Storage::disk(config('filesystems.default'))->exists($path)) {
                 // Delete the file from the public disk
-                Storage::disk('public')->delete($path);
+                Storage::disk(config('filesystems.default'))->delete($path);
             }
 
             $file->delete();
