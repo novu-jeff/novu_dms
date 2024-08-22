@@ -51,6 +51,6 @@ class DocumentFinderController extends Controller
             ->where('file_name', $fileName)
             ->first();
 
-        return Storage::disk('public')->download($documentFile->file_path);
+        return Storage::disk(config('filesystems.default'))->download($documentFile->file_path);
     }
 }
