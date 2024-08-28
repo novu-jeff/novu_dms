@@ -42,7 +42,8 @@ class FileService
         $folder = $payload['folder'];
 
         $filePath = $payload['file']->store($folder, config('filesystems.default'));
-
+        dd($filePath);
+        
         // Get the file size in bytes
         $fileSizeBytes = Storage::disk(config('filesystems.default'))->size($filePath);
 
