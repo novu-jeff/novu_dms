@@ -42,7 +42,7 @@ class DocumentService
 
         $folder = Str::lower($request->folder);
 
-        Log::info("FILE: " . $request->file('file'));
+        dd($request->file('file'));
 
         foreach ($request->file('file') as $file) {
             $this->fileService->uploadFile($file, $folder, $document->id);
