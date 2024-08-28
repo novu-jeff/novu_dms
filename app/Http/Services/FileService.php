@@ -15,7 +15,8 @@ class FileService
         $filePath = $file->store($folder, config('filesystems.default'));
 
         // Get the file size in bytes
-        $fileSizeBytes = Storage::disk(config('filesystems.default'))->size($filePath);
+        // $fileSizeBytes = Storage::disk(config('filesystems.default'))->size($filePath);
+        $fileSizeBytes = $file->getSize();
 
         // Convert file size to human-readable format
         $fileSizeReadable = $this->humanFilesize($fileSizeBytes);
