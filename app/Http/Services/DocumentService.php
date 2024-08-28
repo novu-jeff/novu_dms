@@ -10,6 +10,7 @@ use App\Http\Services\FileService;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\DocumentManagementStoreRequest;
 use App\Http\Requests\DocumentManagementUpdateRequest;
+use Log;
 
 class DocumentService
 {
@@ -40,6 +41,8 @@ class DocumentService
         ]);
 
         $folder = Str::lower($request->folder);
+
+        Log::info("FILE: " . $request->file('file'));
 
         foreach ($request->file('file') as $file) {
             $this->fileService->uploadFile($file, $folder, $document->id);
