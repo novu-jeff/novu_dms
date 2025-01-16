@@ -24,11 +24,11 @@ class DocumentManagementRequest extends FormRequest
     public function rules()
     {
         return [
-            'year' => '',
-            'month' => '',
-            'type' => 'in:1,2,3,4',
-            'tags' => '',
-            'doc_date' => 'date'
+            'year' => ['nullable'],
+            'month' => ['nullable'],
+            'type' => ['nullable', 'in:1,2,3,4'],
+            'tags' => ['nullable'],
+            'doc_date' => ['nullable', 'date']
         ];
     }
 }
