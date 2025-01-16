@@ -28,7 +28,7 @@ class DocumentManagementRequest extends FormRequest
             'month' => ['nullable'],
             'type' => ['nullable', 'in:1,2,3,4'],
             'tags' => ['nullable'],
-            'doc_date' => ['nullable', 'date']
+            'doc_date' => ['nullable']
         ];
     }
 }
