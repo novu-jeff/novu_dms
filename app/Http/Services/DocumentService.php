@@ -73,7 +73,7 @@ class DocumentService
         ->when(isset($tags), function ($query) use ($tags) {
             $query->where('tags', 'like', '%' . $tags . '%');
         })
-        ->when(isset($docDate), function ($query) use ($docDate) {
+        ->when(isset($docDate) && $docDate != null, function ($query) use ($docDate) {
             $query->whereDate('doc_date', $docDate);
         })
         ->where('document_access', self::PUBLIC_PERMISSION)
