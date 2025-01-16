@@ -55,7 +55,6 @@ class DocumentService
 
     public function getDocumentsByYearAndMonth($payload = [])
     {
-        dd("here");
         $year = isset($payload['year']) && $payload['year'] != "null" && $payload['year'] != '' ? $payload['year'] : null;
         $month = isset($payload['month']) && $payload['month'] != "null" && $payload['month'] != '' ? $payload['month'] : null;
         $type = isset($payload['type']) && $payload['type'] != "null" && $payload['type'] != '' ? $payload['type'] : null;
@@ -75,7 +74,6 @@ class DocumentService
             $query->where('tags', 'like', '%' . $tags . '%');
         })
         ->when(isset($docDate) && $docDate != null, function ($query) use ($docDate) {
-            dd("here");
             $query->whereDate('doc_date', $docDate);
         })
         ->where('document_access', self::PUBLIC_PERMISSION)
