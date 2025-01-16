@@ -55,6 +55,7 @@ class DocumentService
 
     public function getDocumentsByYearAndMonth($payload = [])
     {
+        dd("here");
         $year = isset($payload['year']) && $payload['year'] != "null" && $payload['year'] != '' ? $payload['year'] : null;
         $month = isset($payload['month']) && $payload['month'] != "null" && $payload['month'] != '' ? $payload['month'] : null;
         $type = isset($payload['type']) && $payload['type'] != "null" && $payload['type'] != '' ? $payload['type'] : null;
