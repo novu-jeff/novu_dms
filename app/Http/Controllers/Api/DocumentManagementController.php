@@ -24,6 +24,7 @@ class DocumentManagementController extends Controller
     {
         DB::beginTransaction();
         try {
+            dd($request->all());
             $payload = $request->validated();
 
             $documents = $this->documentService->getDocumentsByYearAndMonth($payload);
