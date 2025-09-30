@@ -14,6 +14,7 @@ use App\Http\Requests\DocumentManagementUpdateRequest;
 class DocumentManagementController extends Controller
 {
     protected $documentService;
+    protected const PUBLIC_PERMISSION = 1;
 
     public function __construct(DocumentService $documentService)
     {
@@ -113,4 +114,74 @@ class DocumentManagementController extends Controller
             ], 500);
         }
     }
+
+    // List all documents with relationships
+    public function index(Request $request)
+        {
+            $query = Document::query()
+            ->where('document_access', self::PUBLIC_PERMISSION)
+            ->with([
+                'branch:id,description,status',
+                'department:id,description,status',
+                'division:id,description,status',
+                'section:id,description,status',
+                'folder',   // load all columns
+                'files'     // load all columns
+            ]);
+
+            // Filter by year
+            if ($request->filled('year')) {
+                $query->whereYear('created_at', $request->year);
+            }
+
+            // Filter by month
+            if ($request->filled('month')) {
+                $query->whereMonth('created_at', $request->month);
+            }
+
+            // Filter by tags
+            if ($request->filled('tags')) {
+                $tags = explode(',', $request->tags);
+                foreach ($tags as $tag) {
+                    $query->where('tags', 'LIKE', "%$tag%");
+                }
+            }
+
+            // Filter by document date
+            if ($request->filled('doc_date')) {
+                $query->whereDate('doc_date', $request->doc_date);
+            }
+
+            // Filter by type (if column exists)
+            if ($request->filled('type')) {
+                $query->where('type', $request->type);
+            }
+
+//             dd([
+//      'sql'      => $query->toSql(),
+//      'bindings' => $query->getBindings(),
+//  ]);
+             // Paginate results, default 10 per page
+         $perPage = $request->get('per_page', 10);
+         $documents = $query->orderBy('created_at', 'desc')->paginate($perPage);
+
+
+            //$documents = $query->orderBy('created_at', 'desc')->get();
+
+            // return response()->json([
+            //     'status' => true,
+            //     'count'  => $documents->count(),
+            //     'data'   => $documents
+            // ]);
+
+            return response()->json([
+                'status' => true,
+                'count'  => $documents->total(),
+                'current_page' => $documents->currentPage(),
+                'last_page'    => $documents->lastPage(),
+                'per_page'     => $documents->perPage(),
+                'data'   => $documents->items(),
+            ]);
+        }
+
 }

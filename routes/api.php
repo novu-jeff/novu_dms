@@ -22,3 +22,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['api', 'client'])->group(function () {
     Route::get('documents', [DocumentManagementController::class, 'getDocumentsByYearAndMonth']);
 });
+
+
+Route::get('/getdocuments', [DocumentManagementController::class, 'index']);
+Route::get('/getdocuments/{id}', [DocumentManagementController::class, 'show']);
