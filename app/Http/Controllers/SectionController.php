@@ -8,12 +8,14 @@ use App\Models\Section;
 use App\Service\BaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Services\AuditService; // ✅ added
 
 class SectionController extends Controller
 {
     public function all()
     {
         $sections = Section::where('status', 1)->get();
+        AuditService::log('Visit Section Page', 'View all sections');
         return response()->json($sections);
     }
 
@@ -46,13 +48,14 @@ class SectionController extends Controller
         $divisions = Division::where('status', 1)
             ->where('department_id', $departments->first()->id)
             ->get();
-
+        AuditService::log('Visit Section Page', 'View all sections index page');
         return view('section.index', compact('departments', 'divisions'));
     }
 
     public function show(Section $section)
     {
         $section->load(['department', 'division']);
+        AuditService::log('Show Section', 'View Section Details ' . ($section->description ?? 'Untitled Document'));
         return response()->json($section);
     }
 
@@ -74,10 +77,11 @@ class SectionController extends Controller
             ]);
 
             DB::commit();
-
+            AuditService::log('Added Section', 'Section created Successfully ' . ($section->description ?? 'Untitled Document'));
             return response()->json(['message' => 'Section created successfully', 'data' => $section], 201);
         } catch (\Exception $e) {
             DB::rollBack();
+            AuditService::log('Failed Section', 'Failed to create section ' . ($section->description ?? 'Untitled Document'));
             return response()->json(['message' => 'Failed to create section', 'error' => $e->getMessage()], 500);
         }
     }
@@ -100,10 +104,11 @@ class SectionController extends Controller
             ]);
 
             DB::commit();
-
+            AuditService::log('Update Section', 'Section updated successfully ' . ($section->description ?? 'Untitled Document'));
             return response()->json(['message' => 'Section updated successfully', 'data' => $section]);
         } catch (\Exception $e) {
             DB::rollBack();
+            AuditService::log('Failed to Update', 'Failed to update section' . ($section->description ?? 'Untitled Document'));
             return response()->json(['message' => 'Failed to update section', 'error' => $e->getMessage()], 500);
         }
     }
@@ -122,10 +127,11 @@ class SectionController extends Controller
             }
 
             DB::commit();
-
+            AuditService::log('Delete Section', 'Section status changed ' . ($section->description ?? 'Untitled Document'));
             return response()->json(['message' => $message]);
         } catch (\Exception $e) {
             DB::rollBack();
+            AuditService::log('Failed to Delete', 'Failed to delete section' . ($section->description ?? 'Untitled Document'));
             return response()->json(['message' => 'Failed to delete section', 'error' => $e->getMessage()], 500);
         }
     }

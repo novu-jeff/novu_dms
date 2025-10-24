@@ -129,6 +129,11 @@ class DocumentManagementController extends Controller
                 'files'     // load all columns
             ]);
 
+            // Filter by folder_id
+            if ($request->filled('folder_id')) {
+                $query->where('folder_id', $request->folder_id);
+            }
+
             // Filter by year
             if ($request->filled('year')) {
                 $query->whereYear('created_at', $request->year);

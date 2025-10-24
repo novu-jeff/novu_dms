@@ -10,6 +10,7 @@ use App\Models\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Services\AuditService; // ✅ added
 
 class FileController extends Controller
 {
@@ -32,6 +33,9 @@ class FileController extends Controller
             }
 
             DB::commit();
+
+            AuditService::log('Added File', 'File Uploaded: ' . ($documents->title ?? 'Untitled Document'));
+    
             return response()->json([
                 'message' => 'File Uploaded'
             ], 200);
@@ -45,6 +49,7 @@ class FileController extends Controller
 
     public function show(File $file)
     {
+        AuditService::log('Visited File Management', 'User viewed the files index page.');
         return response()->json($file);
     }
 
@@ -54,6 +59,8 @@ class FileController extends Controller
         try {
             $data = $this->fileService->updateFile($file, $request->validated());
             DB::commit();
+
+            AuditService::log('Update File', 'Update File: ' . ($data->title ?? 'Untitled Document'));
             return response()->json([
                 'data' => $data,
                 'message' => 'File Deleted'

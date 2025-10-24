@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Services\DocumentService;
 use App\Http\Requests\DocumentManagementStoreRequest;
 use App\Http\Requests\DocumentManagementUpdateRequest;
+use App\Services\AuditService; // ✅ added
 
 class DocumentManagementController extends Controller
 {
@@ -25,6 +26,11 @@ class DocumentManagementController extends Controller
     public function index()
     {
         $branches = Branch::where('status', 1)->get();
+
+        // ✅ Log the page visit
+        AuditService::log('Visited Document Management', 'User viewed the document management index page.');
+
+
         return view('document_management.index', compact('branches'));
     }
 
@@ -36,6 +42,11 @@ class DocumentManagementController extends Controller
             $this->documentService->addDocument($request);
 
             DB::commit();
+
+             // ✅ Log document creation
+            AuditService::log('Created Document', 'Document added: ' . ($document->title ?? 'Untitled Document'));
+
+
             return response()->json([
                 'message' => 'Document Added'
             ], 200);
@@ -49,6 +60,10 @@ class DocumentManagementController extends Controller
                 'type' => 'document management store'
             ];
             Log::error(json_encode($log));
+
+            // ✅ Log failure to audit
+            AuditService::log('Failed Document Creation', 'Error: ' . $e->getMessage());
+
             return response()->json([
                 'message' => config('app.env') == 'local' ? $e->getMessage() : 'Server Error'
             ], 500);

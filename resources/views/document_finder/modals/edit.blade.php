@@ -70,6 +70,20 @@
                         </div>
                     </div>
 
+                    <!-- Folder Selection -->
+                    <div class="col-12 mb-3">
+                        <label for="folder_id" class="form-label">Folder</label>
+                        <select id="folder_id" name="folder_id" class="form-select" required>
+                            <option value="">Select Folder</option>
+                            @foreach($folders as $folder)
+                                <option value="{{ $folder->id }}">
+                                    {{ $folder->name }} 
+                                    ({{ $folder->branch->description ?? '-' }} / {{ $folder->division->description ?? '-' }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
                 </div>
             </form>
         </div>

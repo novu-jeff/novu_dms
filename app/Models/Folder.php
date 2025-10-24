@@ -27,6 +27,11 @@ class Folder extends Model
         return $this->belongsTo(Division::class);
     }
 
+    public function documents() 
+    { 
+        return $this->hasMany(Document::class); 
+    }
+
     public function section(): BelongsTo
     {
         return $this->belongsTo(Section::class);

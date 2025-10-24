@@ -12,7 +12,9 @@ class FileService
 {
     public function uploadFile($file, $folder, $documentId)
     {
-        $filePath = $file->store($folder, config('filesystems.default'));
+       //$filePath = $file->store($folder, config('filesystems.default'));
+        $filePath = $file->store($folder, 'public');
+        //dd($filePath);
 
         // Get the file size in bytes
         // $fileSizeBytes = Storage::disk(config('filesystems.default'))->size($filePath);

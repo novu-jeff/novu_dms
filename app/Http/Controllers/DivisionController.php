@@ -8,6 +8,7 @@ use App\Service\BaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use function Illuminate\Events\queueable;
+use App\Services\AuditService; // ✅ added
 
 class DivisionController extends Controller
 {
@@ -30,12 +31,14 @@ class DivisionController extends Controller
         }
 
         $departments = Department::where('status', 1)->get();
+        AuditService::log('Visit Division Page', 'View all divisions index page');
         return view('division.index', compact('departments'));
     }
 
     public function show(Division $division)
     {
         $division->load('department');
+        AuditService::log('Show Division', 'View Division Details ' . ($division->description ?? 'Untitled Document'));
         return response()->json($division);
     }
 
@@ -55,10 +58,11 @@ class DivisionController extends Controller
             ]);
 
             DB::commit();
-
+            AuditService::log('Added Division', 'Division created Successfully ' . ($division->description ?? 'Untitled Document'));
             return response()->json(['message' => 'Division created successfully', 'data' => $division], 201);
         } catch (\Exception $e) {
             DB::rollBack();
+            AuditService::log('Failed Division', 'Failed to create division ' . ($division->description ?? 'Untitled Document'));
             return response()->json(['message' => 'Failed to create department', 'error' => $e->getMessage()], 500);
         }
     }
@@ -79,10 +83,11 @@ class DivisionController extends Controller
             ]);
 
             DB::commit();
-
+            AuditService::log('Update Division', 'Division updated successfully ' . ($division->description ?? 'Untitled Document'));
             return response()->json(['message' => 'Division updated successfully', 'data' => $division]);
         } catch (\Exception $e) {
             DB::rollBack();
+            AuditService::log('Failed to Update', 'Failed to update division' . ($division->description ?? 'Untitled Document'));
             return response()->json(['message' => 'Failed to update division', 'error' => $e->getMessage()], 500);
         }
     }
@@ -101,10 +106,11 @@ class DivisionController extends Controller
             }
 
             DB::commit();
-
+            AuditService::log('Delete Division', 'Division status changed ' . ($division->description ?? 'Untitled Document'));
             return response()->json(['message' => $message]);
         } catch (\Exception $e) {
             DB::rollBack();
+            AuditService::log('Failed to Delete', 'Failed to delete division' . ($division->description ?? 'Untitled Document'));   
             return response()->json(['message' => 'Failed to delete division', 'error' => $e->getMessage()], 500);
         }
     }

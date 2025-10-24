@@ -11,12 +11,14 @@ use Faker\Provider\Base;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
+use App\Services\AuditService; // ✅ added
 
 class FolderController extends Controller
 {
     public function all()
     {
         $folders = Folder::where('status', 1)->get();
+        AuditService::log('Visit Folder Page', 'View all folders');
         return response()->json($folders);
     }
 
@@ -51,6 +53,7 @@ class FolderController extends Controller
                     },
                 ],
             ];
+            AuditService::log('Visit Folder Page', 'View all folders index page');
             return (new BaseService($folders))->dataTable($additionalColumns, [], '#addModal');
         }
 
@@ -61,6 +64,7 @@ class FolderController extends Controller
     public function show(Folder $folder)
     {
         $folder->load(['department', 'division', 'branch', 'section']);
+        AuditService::log('Show Folder', 'View Folder File ' . ($folder->name?? 'Untitled Document'));
         return response()->json($folder);
     }
 
@@ -86,10 +90,11 @@ class FolderController extends Controller
             ]);
 
             DB::commit();
-
+            AuditService::log('Added Folder', 'Folder created Successfully ' . ($folder->name ?? 'Untitled Document'));
             return response()->json(['message' => 'Folder created successfully', 'data' => $folder], 201);
         } catch (\Exception $e) {
             DB::rollBack();
+            AuditService::log('Failed Folder', 'Failed to create folder ' . ($folder->name ?? 'Untitled Document'));
             return response()->json(['message' => 'Failed to create folder', 'error' => $e->getMessage()], 500);
         }
     }
@@ -117,9 +122,12 @@ class FolderController extends Controller
 
             DB::commit();
 
+            AuditService::log('Update Folder', 'Folder updated successfully ' . ($folder->name ?? 'Untitled Document'));
+
             return response()->json(['message' => 'Folder updated successfully', 'data' => $folder]);
         } catch (\Exception $e) {
             DB::rollBack();
+            AuditService::log('Failed to Update', 'Failed to update folder' . ($folder->name?? 'Untitled Document'));
             return response()->json(['message' => 'Failed to update folder', 'error' => $e->getMessage()], 500);
         }
     }
@@ -132,10 +140,12 @@ class FolderController extends Controller
             if ($folder->status == 0) {
                 // If the branch is soft-deleted, restore it
                 $folder->update(['status' => 1]);
+                AuditService::log('Restore', 'Folder restored successfully' . ($folder->name?? 'Untitled Document'));
                 $message = 'Folder restored successfully';
             } else {
                 // If the branch is not soft-deleted, soft delete it
                 $folder->update(['status' => 0]);
+                AuditService::log('Delete', 'Folder deleted successfully' . ($folder->name ?? 'Untitled Document'));
                 $message = 'Folder deleted successfully';
             }
 
@@ -158,5 +168,18 @@ class FolderController extends Controller
             ->get();
 
         return response()->json($folders);
+    }
+
+    public function getfoldersNames(Request $request)
+    {
+        $folders = Folder::with(['branch', 'division'])
+            ->where('status', 1)
+            ->whereHas('documents', function ($query) {
+                $query->where('type', 5);
+            })
+            ->orderBy('name')
+            ->get();
+
+        return response()->json(['data' => $folders]);
     }
 }

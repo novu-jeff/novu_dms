@@ -79,7 +79,8 @@
             <span class="text">{{ __('Folder Management') }}</span>
         </a>
     </li>
-
+    @auth
+        @if(auth()->user()->is_admin)
     <li class="nav-item nav-item-has-children">
         <a class="collapsed" href="#0" class="" data-bs-toggle="collapse" data-bs-target="#ddmenu_1"
            aria-controls="ddmenu_1" aria-expanded="true" aria-label="Toggle navigation">
@@ -117,6 +118,13 @@
             <li>
                 <a href="{{ route('sections.index') }}">Section</a>
             </li>
+           
+                <li class="nav-item">
+                    <a href="{{ route('audit-logs.index') }}" class="nav-link">Audit Logs</a>
+                </li>
+           
         </ul>
     </li>
+      @endif
+    @endauth
 </ul>

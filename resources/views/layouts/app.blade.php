@@ -10,6 +10,8 @@
     <!-- ========== All CSS files linkup ========= -->
     <link rel="stylesheet" href="{{ asset('css/lineicons.css') }}"/>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
     @vite('resources/sass/app.scss')
 </head>
 <body>

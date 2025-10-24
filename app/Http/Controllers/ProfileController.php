@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Services\AuditService; // ✅ added
 
 class ProfileController extends Controller
 {
@@ -22,7 +23,7 @@ class ProfileController extends Controller
             'name' => $request->name,
             'email' => $request->email,
         ]);
-
+        AuditService::log('Profile Updated', 'User updated their profile information.');
         return redirect()->back()->with('success', 'Profile updated.');
     }
 }

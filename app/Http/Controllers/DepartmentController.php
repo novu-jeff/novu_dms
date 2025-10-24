@@ -9,12 +9,14 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
+use App\Services\AuditService; // ✅ added
 
 class DepartmentController extends Controller
 {
     public function all()
     {
         $departments = Department::where('status', 1)->get();
+        AuditService::log('Visit Department Page', 'View all departments');
         return response()->json($departments);
     }
 
@@ -37,12 +39,14 @@ class DepartmentController extends Controller
         }
 
         $branches = Branch::where('status', 1)->get();
+        AuditService::log('Visit Department Page', 'View all departments index page');
         return view('department.index', compact('branches'));
     }
 
     public function show(Department $department)
     {
         $department->load('branch');
+        AuditService::log('Show Department', 'View Department Details ' . ($department->description ?? 'Untitled Document'));
         return response()->json($department);
     }
 
@@ -62,10 +66,11 @@ class DepartmentController extends Controller
             ]);
 
             DB::commit();
-
+            AuditService::log('Added Department', 'Department created Successfully ' . ($department->description ?? 'Untitled Document'));
             return response()->json(['message' => 'Department created successfully', 'data' => $department], 201);
         } catch (\Exception $e) {
             DB::rollBack();
+            AuditService::log('Failed Department', 'Failed to create department ' . ($department->description ?? 'Untitled Document'));
             return response()->json(['message' => 'Failed to create branch', 'error' => $e->getMessage()], 500);
         }
     }
@@ -86,10 +91,11 @@ class DepartmentController extends Controller
             ]);
 
             DB::commit();
-
+            AuditService::log('Update Department', 'Department updated successfully ' . ($department->description ?? 'Untitled Document'));
             return response()->json(['message' => 'Department updated successfully', 'data' => $department]);
         } catch (\Exception $e) {
             DB::rollBack();
+            AuditService::log('Failed to Update', 'Failed to update department' . ($department->description ?? 'Untitled Document'));
             return response()->json(['message' => 'Failed to update branch', 'error' => $e->getMessage()], 500);
         }
     }
@@ -108,10 +114,11 @@ class DepartmentController extends Controller
             }
 
             DB::commit();
-
+            AuditService::log('Delete Department', 'Department status changed ' . ($department->description ?? 'Untitled Document'));
             return response()->json(['message' => $message]);
         } catch (\Exception $e) {
             DB::rollBack();
+            AuditService::log('Failed to Delete', 'Failed to delete department' . ($department->description ?? 'Untitled Document'));
             return response()->json(['message' => 'Failed to delete department', 'error' => $e->getMessage()], 500);
         }
     }

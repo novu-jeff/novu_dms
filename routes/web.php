@@ -12,6 +12,7 @@ use App\Http\Controllers\FolderController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuditLogController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -41,6 +42,13 @@ Route::prefix('api')->group(function () {
     Route::put('documents/{document}/permission', [APIDocumentManagementController::class, 'updateDocumentPermission']);
     Route::put('documents/{id}', [APIDocumentManagementController::class, 'updateDocument']);
     Route::get('documents/{id}', [APIDocumentManagementController::class, 'getDocumentById']);
+
+    Route::get('/getfolders', [FolderController::class, 'getfoldersNames']);
+});
+
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::resource('audit-logs', AuditLogController::class)->only(['index', 'show', 'destroy']);
 });
 
 Route::middleware('auth')->group(function () {
