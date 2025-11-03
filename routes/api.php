@@ -19,6 +19,12 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //});
 
-Route::middleware(['api', 'client'])->group(function () {
-    Route::get('documents', [DocumentManagementController::class, 'getDocumentsByYearAndMonth']);
+// Route::middleware(['api', 'client'])->group(function () {
+//     Route::get('documents', [DocumentManagementController::class, 'getDocumentsByYearAndMonth']);
+//     Route::get('getdocuments', [DocumentManagementController::class, 'getDocumentsByYearAndMonth']);
+// });
+
+// routes/api.php in DMS
+Route::middleware(['api', 'client.middleware'])->group(function () {
+    Route::get('getdocuments', [DocumentManagementController::class, 'getDocumentsByYearAndMonth']);
 });

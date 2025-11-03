@@ -6,6 +6,7 @@ use Throwable;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class Handler extends ExceptionHandler
 {
@@ -46,13 +47,25 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->renderable(function (NotFoundHttpException $e, Request $request) {
+            // Log all debug info
+            Log::warning('NotFoundHttpException caught', [
+                'url' => $request->fullUrl(),
+                'method' => $request->method(),
+                'route' => optional($request->route())->uri(),
+                'parameters' => $request->all(),
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            // Return clean API response
             if (
                 $request->is('api/*') ||
                 $request->acceptsJson() ||
                 $request->ajax()
             ) {
                 return response()->json([
-                    'message' => 'Record not found.'
+                    'message' => 'Record not found.',
                 ], 404);
             }
         });
