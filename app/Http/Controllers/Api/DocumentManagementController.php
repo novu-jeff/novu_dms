@@ -161,8 +161,10 @@ class DocumentManagementController extends Controller
 //      'sql'      => $query->toSql(),
 //      'bindings' => $query->getBindings(),
 //  ]);
-             // Paginate results, default 10 per page
-         $perPage = $request->get('per_page', 10);
+             // Paginate results; allow 10, 25, 50, 100 per page
+         $requested = (int) $request->get('per_page', 10);
+         $allowed = [10, 25, 50, 100];
+         $perPage = in_array($requested, $allowed, true) ? $requested : 10;
          $documents = $query->orderBy('created_at', 'desc')->paginate($perPage);
 
 

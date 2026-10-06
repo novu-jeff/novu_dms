@@ -43,8 +43,9 @@ class SectionController extends Controller
 
         $departments = Department::where('status', 1)->get();
 
+        $firstDepartmentId = $departments->isNotEmpty() ? $departments->first()->id : null;
         $divisions = Division::where('status', 1)
-            ->where('department_id', $departments->first()->id)
+            ->when($firstDepartmentId, fn ($q) => $q->where('department_id', $firstDepartmentId))
             ->get();
 
         return view('section.index', compact('departments', 'divisions'));

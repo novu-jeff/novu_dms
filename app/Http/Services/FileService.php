@@ -10,20 +10,28 @@ use Illuminate\Support\Facades\Storage;
 
 class FileService
 {
+    public function __construct(
+        protected StorageResolver $storageResolver
+    ) {
+    }
+
     public function uploadFile($file, $folder, $documentId)
     {
-        $filePath = $file->store($folder, config('filesystems.default'));
+        $result = $this->storageResolver->storeWithFallback($file, $folder);
+        $filePath = $result['path'];
 
-        // Get the file size in bytes
-        // $fileSizeBytes = Storage::disk(config('filesystems.default'))->size($filePath);
         $fileSizeBytes = $file->getSize();
-
-        // Convert file size to human-readable format
         $fileSizeReadable = $this->humanFilesize($fileSizeBytes);
 
-        // Get the original name of the file
         $originalName = $file->getClientOriginalName();
         $fileName = Str::lower($originalName);
+
+        // Version control: allow same file name per document; assign next version number
+        $nextVersion = (int) File::where('fileable_id', $documentId)
+            ->where('fileable_type', Document::class)
+            ->whereRaw('LOWER(file_name) = ?', [$fileName])
+            ->max('file_version') + 1;
+        $nextVersion = $nextVersion < 1 ? 1 : $nextVersion;
 
         return File::create([
             'fileable_id' => $documentId,
@@ -31,6 +39,7 @@ class FileService
             'file_name' => $fileName,
             'file_path' => $filePath,
             'file_size' => $fileSizeReadable,
+            'file_version' => $nextVersion,
             'uploaded_by' => auth()->id()
         ]);
     }
@@ -42,11 +51,11 @@ class FileService
         // Set up for update
         $folder = $payload['folder'];
 
-        $filePath = $payload['file']->store($folder, config('filesystems.default'));
-        // dd($filePath);
+        $result = $this->storageResolver->storeWithFallback($payload['file'], $folder);
+        $filePath = $result['path'];
 
         // Get the file size in bytes
-        $fileSizeBytes = Storage::disk(config('filesystems.default'))->size($filePath);
+        $fileSizeBytes = $this->storageResolver->size($filePath);
 
         // Convert file size to human-readable format
         $fileSizeReadable = $this->humanFilesize($fileSizeBytes);

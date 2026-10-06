@@ -13,6 +13,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\WhitepaperController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,12 +26,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/whitepaper', [WhitepaperController::class, 'index'])->name('whitepaper');
+
 Route::get('/', function () {
     return view('auth.login');
 });
 
 Route::get('/get-folder-by-location', [FolderController::class, 'getFolderByLocation'])->name('getFolderByLocation');
 
+// Serve stored files from local disk when not in public (used by LIS ordinance/resolution etc.)
+Route::get('/storage/{folder_id}/{filename}', [FileController::class, 'serve'])
+    ->where('filename', '[^/]+')
+    ->name('storage.serve');
 
 Auth::routes();
 

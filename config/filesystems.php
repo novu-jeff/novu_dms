@@ -54,6 +54,12 @@ return [
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
+            // Root prefix in bucket for easy browsing (e.g. dms/jones/1/file.pdf)
+            'root' => env('AWS_S3_ROOT', 'dms/jones'),
+            // Disable SSL verify for Scality/custom S3 endpoints (AWS SDK 'http' request options)
+            'http' => [
+                'verify' => filter_var(env('AWS_VERIFY_SSL', true), FILTER_VALIDATE_BOOLEAN),
+            ],
         ],
 
     ],
