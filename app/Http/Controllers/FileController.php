@@ -6,6 +6,7 @@ use App\Http\Requests\FileStoreRequest;
 use App\Http\Requests\FileUpdateRequest;
 use App\Http\Services\DocumentService;
 use App\Http\Services\FileService;
+use App\Http\Services\StorageResolver;
 use App\Models\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,10 +14,62 @@ use Illuminate\Support\Facades\Storage;
 
 class FileController extends Controller
 {
-    protected $fileService;
-    public function __construct(FileService $fileService)
+    public function __construct(
+        protected FileService $fileService,
+        protected StorageResolver $storageResolver
+    ) {
+    }
+
+    /**
+     * Serve a file from storage (local, public, or S3). When FILESYSTEM_DISK=s3, streams from S3 or local fallback.
+     */
+    public function serve(string $folder_id, string $filename)
     {
-        $this->fileService = $fileService;
+        $folder_id = preg_replace('/[^0-9a-zA-Z_-]/', '', $folder_id);
+        $filename = basename($filename);
+        if ($filename === '' || str_contains($filename, '..')) {
+            abort(404);
+        }
+
+        $path = $folder_id . '/' . $filename;
+        $diskName = $this->storageResolver->getDiskForReading($path);
+        if ($diskName === null && Storage::disk('public')->exists($path)) {
+            $fullPath = Storage::disk('public')->path($path);
+            if (is_file($fullPath) && is_readable($fullPath)) {
+                $mimeType = \Illuminate\Support\Facades\File::mimeType($fullPath) ?: 'application/octet-stream';
+                return response()->file($fullPath, [
+                    'Content-Type' => $mimeType,
+                    'Content-Disposition' => 'inline; filename="' . $filename . '"',
+                ]);
+            }
+        }
+        if ($diskName === null) {
+            $localRoot = storage_path('app');
+            $directPath = $localRoot . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $path);
+            if (is_file($directPath) && is_readable($directPath)) {
+                $mimeType = \Illuminate\Support\Facades\File::mimeType($directPath) ?: 'application/octet-stream';
+                return response()->file($directPath, [
+                    'Content-Type' => $mimeType,
+                    'Content-Disposition' => 'inline; filename="' . $filename . '"',
+                ]);
+            }
+            abort(404);
+        }
+
+        // Stream from disk (S3 or local)
+        $disk = Storage::disk($diskName);
+        try {
+            $mimeType = $disk->mimeType($path) ?: 'application/octet-stream';
+        } catch (\Throwable $e) {
+            $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+            $mimeType = $ext && class_exists(\Symfony\Component\Mime\MimeTypes::class)
+                ? (\Symfony\Component\Mime\MimeTypes::getDefault()->getMimeTypes($ext)[0] ?? 'application/octet-stream')
+                : 'application/octet-stream';
+        }
+        return response($disk->get($path), 200, [
+            'Content-Type' => $mimeType,
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        ]);
     }
 
     public function store(FileStoreRequest $request)
@@ -73,10 +126,7 @@ class FileController extends Controller
             $id = $file->id;
             $path = $file->file_path;
 
-            if (Storage::disk(config('filesystems.default'))->exists($path)) {
-                // Delete the file from the public disk
-                Storage::disk(config('filesystems.default'))->delete($path);
-            }
+            $this->storageResolver->delete($path);
 
             $file->delete();
             DB::commit();

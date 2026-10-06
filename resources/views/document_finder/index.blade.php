@@ -75,9 +75,10 @@
                             <form id="download-form-{{$doc->id}}-{{ $file->id }}" action="{{ route('document_finder.download', $doc->id) }}" method="post">
                                 @csrf
                                 <input name="document" type="hidden" value="{{ $doc->id }}">
+                                <input name="file_id" type="hidden" value="{{ $file->id }}">
                                 <input name="filename" type="hidden" value="{{ $file->file_name }}">
                                 <div class="d-flex align-items-end gap-3">
-                                    <a class="text-uppercase" href="#!" onclick="document.getElementById('download-form-{{ $doc->id }}-{{ $file->id }}').submit()">{{ $file->file_name }}</a>
+                                    <a class="text-uppercase" href="#!" onclick="document.getElementById('download-form-{{ $doc->id }}-{{ $file->id }}').submit()">{{ $file->file_name }}@if(($file->file_version ?? 1) > 1) (v{{ $file->file_version }})@endif</a>
                                 </div>
                             </form>
                             @endforeach
@@ -136,8 +137,24 @@
     @endforelse
 
     <div class="my-3">
-        <div class="d-flex justify-content-start">
-            {{ $documents->links() }}
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div class="d-flex align-items-center gap-2">
+                <label class="text-muted small mb-0">Show</label>
+                <form method="get" action="{{ route('document_finder.index') }}" class="d-flex align-items-center gap-2" id="per-page-form">
+                    @if(request('search'))
+                        <input type="hidden" name="search" value="{{ request('search') }}">
+                    @endif
+                    <select name="per_page" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                        @foreach([10, 25, 50, 100] as $n)
+                            <option value="{{ $n }}" {{ (int) request('per_page', 10) === $n ? 'selected' : '' }}>{{ $n }}</option>
+                        @endforeach
+                    </select>
+                    <span class="text-muted small">per page</span>
+                </form>
+            </div>
+            <div>
+                {{ $documents->links() }}
+            </div>
         </div>
     </div>
 
@@ -356,15 +373,17 @@
                             let token = $('meta[name="csrf-token"]').attr('content');
 
                             document.files.forEach(file => {
+                                const versionSuffix = (file.file_version && file.file_version > 1) ? ` (v${file.file_version})` : '';
                                 tbodyElement.append(`
                             <tr id="file-${file.id}">
-                                <td>${file.file_name}</td>
+                                <td>${file.file_name}${versionSuffix}</td>
                                 <td>${file.file_size}</td>
                                 <td>${moment(file.created_at).format('ll')}</td>
                                 <td class="d-flex">
                                     <form class="me-1" id="download-form-modal-${document.id}-${file.id}" action="/document-finder/download/${document.id}" method="post">
                                     <input name="_token" type="hidden" value="${token}">
                                     <input name="document" type="hidden" value="${document.id}">
+                                    <input name="file_id" type="hidden" value="${file.id}">
                                     <input name="filename" type="hidden" value="${file.file_name}">
                                     <div class="d-flex align-items-end gap-3">
                                         <button type="submit" class="btn btn-secondary btn-sm " href="#!">
