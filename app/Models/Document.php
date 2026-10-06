@@ -11,6 +11,10 @@ class Document extends Model
 
     protected $guarded = ['id', 'created_at', 'updated_at'];
 
+    protected $casts = [
+        'doc_date' => 'date',
+    ];
+
     public function branch()
     {
         return $this->belongsTo(Branch::class);

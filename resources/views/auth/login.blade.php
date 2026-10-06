@@ -78,6 +78,9 @@
                     </div>
                     <!-- end row -->
                 </form>
+                <p class="text-center mt-3 mb-0">
+                    <a href="{{ route('whitepaper') }}">White Paper</a>
+                </p>
             </div>
         </div>
     </div>

@@ -213,4 +213,11 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 
+    'cms_url' => env('CMS_URL', 'http://localhost'),
+    'lis_url' => env('LIS_URL', 'http://localhost'),
+    'dms_url' => env('DMS_URL', env('APP_URL', 'http://localhost')),
+    'logo' => env('APP_LOGO'),
+    'client' => env('APP_CLIENT', 'Municipality of Buguey'),
+    'whitepaper_product' => env('WHITEPAPER_PRODUCT', 'DMS'),
+
 ];

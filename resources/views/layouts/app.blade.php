@@ -98,25 +98,16 @@
     <footer class="footer">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-6 order-last order-md-first">
-                    <div class="copyright text-md-start">
-                        <p class="text-sm">
-                            Document Management System
-                            <a
-                                    href="https://plainadmin.com"
-                                    rel="nofollow"
-                                    target="_blank"
-                            >
-                                - All rights reserved.
-                            </a>
+                <div class="col-md-12 text-center">
+                    <div class="copyright text-md-center">
+                        <p class="text-sm mb-0">
+                            &copy; {{ date('Y') }} Document Management System.
+                            Powered by Novulutions, Inc.
                         </p>
                     </div>
                 </div>
-                <!-- end col-->
             </div>
-            <!-- end row -->
         </div>
-        <!-- end container -->
     </footer>
     <!-- ========== footer end =========== -->
 </main>
