@@ -1,88 +1,64 @@
 @extends('layouts.app')
 
-@section('title') Folder @endsection
+@section('title', 'Folder Management')
 
 @section('content')
-    <!-- ========== title-wrapper start ========== -->
-    <div class="title-wrapper pt-30">
-        <div class="breadcrumb-wrapper">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="#">Dashboard</a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">
-                        Folder
-                    </li>
-                </ol>
-            </nav>
+<div class="fm-page">
+    <div class="fm-page-header">
+        <div class="fm-heading-copy">
+            <div class="fm-eyebrow">WORKSPACE / REPOSITORY</div>
+            <h2>{{ __('Folder Management') }}</h2>
+            <p>Create and organize folders by branch, department, division, and section.</p>
         </div>
-
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <div class="title mb-30">
-                    <h2>{{ __('Folder Management') }}</h2>
-                </div>
-            </div>
-            <div>
-                <!-- Button trigger modal -->
-                <button type="button" id="openAddModal" class="main-btn primary-btn btn-hover w-100 text-center btn-sm" data-bs-toggle="modal" data-bs-target="#addModal">
-                    Add
-                    <span class="fs-5">+</span>
-                </button>
-            </div>
-            <!-- end col -->
-        </div>
-        <!-- end row -->
-    </div>
-    <!-- ========== title-wrapper end ========== -->
-
-    <div class="tables-wrapper">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card-style mb-30">
-                    <div class="table-responsive">
-                        <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
-                            <div class="dataTable-container">
-                                <table id="table" class="table dataTable-table">
-                                    <thead>
-                                    <tr>
-                                        <th><h6>No.</h6></th>
-                                        <th><h6>Name</h6></th>
-                                        <th><h6>Branch</h6></th>
-                                        <th><h6>Department</h6></th>
-                                        <th><h6>Division</h6></th>
-                                        <th><h6>Section</h6></th>
-                                        <th><h6>Status</h6></th>
-                                        <th><h6>Action</h6></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- end card -->
-            </div>
-            <!-- end col -->
-        </div>
-        <!-- end row -->
+        <button type="button" id="openAddModal" class="fm-add-button" data-bs-toggle="modal" data-bs-target="#addModal">
+            <i class="lni lni-plus"></i>
+            <span>Add Folder</span>
+        </button>
     </div>
 
-    @include('folder.modals.create')
+    <section class="fm-table-card">
+        <div class="fm-table-header">
+            <div class="fm-table-heading-icon"><i class="lni lni-folder"></i></div>
+            <div>
+                <h3>Repository Folders</h3>
+                <p>Manage folder names, assigned locations, and availability.</p>
+            </div>
+        </div>
+
+        <div class="table-responsive fm-table-responsive">
+            <table id="table" class="table fm-table align-middle w-100">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Name</th>
+                        <th>Branch</th>
+                        <th>Department</th>
+                        <th>Division</th>
+                        <th>Section</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+@include('folder.modals.create')
 @endsection
+
 @section('scripts')
     <script>
         $(document).ready(function () {
 
             let dataTable = $('#table').DataTable({
+                processing: true,
+                serverSide: true,
+                order: [[1, 'desc']],
                 ajax: {
-                    processing: true,
-                    serverSide: true,
                     url: '/folders',
-                    type: 'GET',
-                    "order": [[1,'desc']]
+                    type: 'GET'
                 },
                 columns: [
                     { data: 'DT_RowIndex', name: 'DT_RowIndex', searchable: false, orderable: true },

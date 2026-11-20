@@ -1,258 +1,478 @@
+
 @extends('layouts.app')
 
-@section('title') Division @endsection
+@section('title')
+    Division
+@endsection
 
 @section('content')
+    <div class="fm-page">
 
-
-    <!-- ========== title-wrapper start ========== -->
-    <div class="title-wrapper pt-30">
-
-        <div class="breadcrumb-wrapper">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="#0">Location Management</a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">
-                        Division
-                    </li>
-                </ol>
-            </nav>
-        </div>
-
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <div class="title mb-30">
-                    <h2>{{ __('Division Management') }}</h2>
+        {{-- Page Header --}}
+        <div class="fm-page-header">
+            <div class="fm-page-heading">
+                <div class="fm-breadcrumb">
+                    <a href="#!">Home</a>
+                    <i class="lni lni-chevron-right"></i>
+                    <a href="#!">Location Management</a>
+                    <i class="lni lni-chevron-right"></i>
+                    <span>Division</span>
                 </div>
-            </div>
-            <div>
-                <!-- Button trigger modal -->
-                <button type="button" class="main-btn primary-btn btn-hover w-100 text-center btn-sm" data-bs-toggle="modal" data-bs-target="#addModal">
-                    Add
-                    <span class="fs-5">+</span>
-                </button>
-            </div>
-            <!-- end col -->
-        </div>
-        <!-- end row -->
-    </div>
-    <!-- ========== title-wrapper end ========== -->
 
-    <div class="tables-wrapper">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card-style mb-30">
-                    <div class="table-responsive">
-                        <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
-                            <div class="dataTable-container">
-                                <table id="table" class="table dataTable-table">
-                                    <thead>
-                                    <tr>
-                                        <th><h6>No.</h6></th>
-                                        <th><h6>Description</h6></th>
-                                        <th><h6>Department</h6></th>
-                                        <th><h6>Added Date</h6></th>
-                                        <th><h6>Status</h6></th>
-                                        <th><h6>Action</h6></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-                        </div>
+                <div class="fm-heading-content">
+                    <div class="fm-heading-icon">
+                        <i class="lni lni-layers"></i>
+                    </div>
+
+                    <div>
+                        <h2 class="fm-heading-title">Division Management</h2>
+                        <p class="fm-heading-subtitle">
+                            Manage divisions and their assigned departments.
+                        </p>
                     </div>
                 </div>
-                <!-- end card -->
             </div>
-            <!-- end col -->
+
+            <button
+                type="button"
+                class="btn fm-create-btn"
+                data-bs-toggle="modal"
+                data-bs-target="#addModal"
+            >
+                <i class="lni lni-plus"></i>
+                <span>Add Division</span>
+            </button>
         </div>
-        <!-- end row -->
+
+        {{-- Division Table --}}
+        <div class="fm-card">
+            <div class="fm-card-header">
+                <div class="fm-card-title-group">
+                    <div class="fm-card-title-icon">
+                        <i class="lni lni-list"></i>
+                    </div>
+
+                    <div>
+                        <h5 class="fm-card-title">Division Directory</h5>
+                        <p class="fm-card-subtitle">
+                            View and manage registered divisions.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fm-table-container">
+                <table id="table" class="table fm-table">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Division</th>
+                            <th>Department</th>
+                            <th>Added Date</th>
+                            <th>Status</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div class="fm-card-footer">
+                <span>
+                    <i class="lni lni-information"></i>
+                    Division records are managed through this directory.
+                </span>
+            </div>
+        </div>
+
     </div>
 
     @include('division.modals.create')
     @include('division.modals.edit')
 @endsection
+
 @section('scripts')
-    <script>
-        $(document).ready(function () {
+<script>
+    $(document).ready(function () {
 
-            let dataTable = $('#table').DataTable({
-                ajax: {
-                    processing: true,
-                    serverSide: true,
-                    url: '/divisions',
-                    type: 'GET',
-                    "order": [[1,'desc']]
+        /**
+         * Escape text before rendering it as HTML.
+         */
+        const escapeHtml = (value) => {
+            return $('<div>').text(value ?? '').html();
+        };
+
+        /**
+         * DataTable initialization.
+         */
+        let dataTable = $('#table').DataTable({
+            processing: true,
+            serverSide: true,
+            responsive: true,
+            autoWidth: false,
+
+            ajax: {
+                url: '/divisions',
+                type: 'GET'
+            },
+
+            order: [[1, 'asc']],
+
+            columns: [
+                {
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex',
+                    searchable: false,
+                    orderable: true,
+                    width: '65px'
                 },
-                columns: [
-                    { data: 'DT_RowIndex', name: 'DT_RowIndex', searchable: false, orderable: true },
-                    { data: 'description', name: 'description' },
-                    { data: 'department', name: 'department' },
-                    { data: 'created_at', name: 'created_at' },
-                    { data: 'status', name: 'status', searchable: false, orderable: false },
-                    { data: 'actions', searchable: false, orderable: false },
-                ]
-            });
+                {
+                    data: 'description',
+                    name: 'description',
+                    render: function (data, type) {
+                        if (type !== 'display') {
+                            return data ?? '';
+                        }
 
-            const handleError = (xhr) => {
-                if(xhr.status === 422) {
-                    let errorsHtml = "<ul>";
-                    $.each(xhr.responseJSON.errors, function (key, value) {
-                        errorsHtml += "<li>" + value[0] + "</li>";
-                    });
-
-                    Swal.fire({
-                        icon: "warning",
-                        title: "Oops...",
-                        html: errorsHtml,
-                    });
-                } else {
-                    console.error(xhr.responseJSON)
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: "Server Error: Something went wrong!",
-                    });
+                        return `
+                            <div class="fm-name-cell">
+                                <div class="fm-name-icon">
+                                    <i class="lni lni-layers"></i>
+                                </div>
+                                <span>${escapeHtml(data)}</span>
+                            </div>
+                        `;
+                    }
+                },
+                {
+                    data: 'department',
+                    name: 'department'
+                },
+                {
+                    data: 'created_at',
+                    name: 'created_at'
+                },
+                {
+                    data: 'status',
+                    name: 'status',
+                    searchable: false,
+                    orderable: false
+                },
+                {
+                    data: 'actions',
+                    name: 'actions',
+                    searchable: false,
+                    orderable: false,
+                    className: 'text-center'
                 }
+            ],
+
+            language: {
+                emptyTable: 'No divisions have been registered yet.',
+                zeroRecords: 'No matching divisions found.',
+                processing: 'Loading divisions...'
+            },
+
+            drawCallback: function () {
+                $('#table').addClass('fm-table-ready');
             }
+        });
 
-            let addModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addModal'));
+        /**
+         * Centralized AJAX error handling.
+         */
+        const handleError = (xhr) => {
+            if (xhr.status === 422 && xhr.responseJSON?.errors) {
+                let errorsHtml = '<ul class="fm-validation-list">';
 
-            let updateModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('updateModal'));
-
-            // Ajax
-            // Add record
-            $('#add-form-submit').click(function () {
-                // Serialize the form data
-                var formData = $('#add-form').serialize();
-
-                // Perform the Ajax request
-                $.ajax({
-                    type: 'POST',
-                    url: '/divisions',
-                    data: formData,
-                    success: function (response) {
-                        Swal.fire({
-                            title: "Success!",
-                            text: response.message,
-                            icon: "success"
-                        });
-                        addModal.hide();
-                        $('#add-form')[0].reset();
-                        dataTable.ajax.reload();
-                    },
-                    error: function (xhr) {
-                        handleError(xhr);
-                    }
+                $.each(xhr.responseJSON.errors, function (key, value) {
+                    errorsHtml += `<li>${escapeHtml(value[0])}</li>`;
                 });
-            });
 
-            let divisionId;
-
-            $('html').on('click', '#edit-button', function () {
-
-                divisionId = $(this).attr('data-id');
-
-                $.ajax({
-                    type: 'GET',
-                    url: `/divisions/${divisionId}`,
-                    success: function (response) {
-
-                        let division = response;
-                        let isArchived = division.department.status !== 1;
-
-                        $.ajax({
-                            type: 'GET',
-                            url: `/departments/all`,
-                            success: function (response) {
-                                $('#update-form #department').empty();
-
-                                response.forEach(department => {
-                                    $('#update-form #department').append(`<option value="${department.id}">${department.description}</option>`)
-                                });
-
-                                $('#update-form #description').val(division.description);
-
-                                $('#update-form #department').val(division.department_id).change();
-
-                                if (isArchived) {
-                                    $('#update-form #department').append(`<option selected value="" disabled>${division.department.description}</option>`)
-                                }
-                            }
-                        })
-                        //
-                    },
-                    error: function (xhr) {
-                        handleError(xhr);
-                    }
-                });
-            });
-
-            $('#update-form-submit').click(function () {
-                // Serialize the form data
-                var formData = $('#update-form').serialize() + '&_method=PUT';
-
-                // Perform the Ajax request
-                $.ajax({
-                    type: 'POST',
-                    url: '/divisions/' + divisionId,
-                    data: formData,
-                    success: function (response) {
-                        Swal.fire({
-                            title: "Success!",
-                            text: response.message,
-                            icon: "success"
-                        });
-                        updateModal.hide();
-                        $('#update-form')[0].reset();
-                        dataTable.ajax.reload();
-                    },
-                    error: function (xhr) {
-                        handleError(xhr);
-                    }
-                });
-            });
-
-            // Delete record
-            $('html').on('click', '#delete-button', function () {
-
-                divisionId = $(this).attr('data-id');
+                errorsHtml += '</ul>';
 
                 Swal.fire({
-                    title: "Are you sure?",
-                    text: "Please confirm to change the status!",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#3085d6",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Yes, do it!"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Perform delete request
-                        $.ajax({
-                            type: 'DELETE',
-                            url: '/divisions/' + divisionId, // Change the URL to match your Laravel route
-                            success: function (response) {
-                                Swal.fire({
-                                    title: "Success!",
-                                    text: response.message,
-                                    icon: "success"
+                    icon: 'warning',
+                    title: 'Please check your input',
+                    html: errorsHtml
+                });
+
+                return;
+            }
+
+            console.error(xhr.responseJSON || xhr.responseText);
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Something went wrong',
+                text: xhr.responseJSON?.message ||
+                    'The server could not complete your request. Please try again.'
+            });
+        };
+
+        /**
+         * Bootstrap modal instances.
+         */
+        const addModalElement = document.getElementById('addModal');
+        const updateModalElement = document.getElementById('updateModal');
+
+        const addModal = addModalElement
+            ? bootstrap.Modal.getOrCreateInstance(addModalElement)
+            : null;
+
+        const updateModal = updateModalElement
+            ? bootstrap.Modal.getOrCreateInstance(updateModalElement)
+            : null;
+
+        /**
+         * Validate forms before submission.
+         */
+        const isFormValid = (formSelector) => {
+            const form = $(formSelector)[0];
+
+            if (!form) {
+                return false;
+            }
+
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return false;
+            }
+
+            return true;
+        };
+
+        /**
+         * Add division.
+         */
+        $('#add-form-submit').on('click', function (event) {
+            event.preventDefault();
+
+            if (!isFormValid('#add-form')) {
+                return;
+            }
+
+            const submitButton = $(this);
+            const formData = $('#add-form').serialize();
+
+            submitButton.prop('disabled', true);
+
+            $.ajax({
+                type: 'POST',
+                url: '/divisions',
+                data: formData,
+
+                success: function (response) {
+                    Swal.fire({
+                        title: 'Division Created',
+                        text: response.message,
+                        icon: 'success'
+                    });
+
+                    if (addModal) {
+                        addModal.hide();
+                    }
+
+                    $('#add-form')[0].reset();
+                    dataTable.ajax.reload(null, false);
+                },
+
+                error: function (xhr) {
+                    handleError(xhr);
+                },
+
+                complete: function () {
+                    submitButton.prop('disabled', false);
+                }
+            });
+        });
+
+        let divisionId;
+
+        /**
+         * Load division details for editing.
+         */
+        $('html').on('click', '#edit-button', function () {
+            divisionId = $(this).attr('data-id');
+
+            $.ajax({
+                type: 'GET',
+                url: `/divisions/${divisionId}`,
+
+                success: function (division) {
+                    $.ajax({
+                        type: 'GET',
+                        url: '/departments/all',
+
+                        success: function (departments) {
+                            const departmentSelect =
+                                $('#update-form #department');
+
+                            departmentSelect.empty();
+
+                            const currentDepartmentExists =
+                                departments.some(function (department) {
+                                    return String(department.id) ===
+                                        String(division.department_id);
                                 });
-                                addModal.hide();
-                                $('#update-form')[0].reset();
-                                dataTable.ajax.reload();
-                            },
-                            error: function (xhr) {
-                                chandleError(xhr);
+
+                            departments.forEach(function (department) {
+                                departmentSelect.append(
+                                    new Option(
+                                        department.description,
+                                        department.id
+                                    )
+                                );
+                            });
+
+                            // Preserve the assigned department if it is
+                            // archived and missing from the active list.
+                            if (
+                                !currentDepartmentExists &&
+                                division.department
+                            ) {
+                                departmentSelect.append(
+                                    new Option(
+                                        division.department.description +
+                                            ' (Archived)',
+                                        division.department_id
+                                    )
+                                );
                             }
+
+                            $('#update-form #description')
+                                .val(division.description);
+
+                            departmentSelect
+                                .val(String(division.department_id))
+                                .trigger('change');
+                        },
+
+                        error: function (xhr) {
+                            handleError(xhr);
+                        }
+                    });
+                },
+
+                error: function (xhr) {
+                    handleError(xhr);
+                }
+            });
+        });
+
+        /**
+         * Update division.
+         */
+        $('#update-form-submit').on('click', function (event) {
+            event.preventDefault();
+
+            if (!isFormValid('#update-form')) {
+                return;
+            }
+
+            if (!divisionId) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No division selected',
+                    text: 'Please select a division to update.'
+                });
+
+                return;
+            }
+
+            const submitButton = $(this);
+            const formData =
+                $('#update-form').serialize() + '&_method=PUT';
+
+            submitButton.prop('disabled', true);
+
+            $.ajax({
+                type: 'POST',
+                url: `/divisions/${divisionId}`,
+                data: formData,
+
+                success: function (response) {
+                    Swal.fire({
+                        title: 'Division Updated',
+                        text: response.message,
+                        icon: 'success'
+                    });
+
+                    if (updateModal) {
+                        updateModal.hide();
+                    }
+
+                    $('#update-form')[0].reset();
+                    dataTable.ajax.reload(null, false);
+                },
+
+                error: function (xhr) {
+                    handleError(xhr);
+                },
+
+                complete: function () {
+                    submitButton.prop('disabled', false);
+                }
+            });
+        });
+
+        /**
+         * Change division status.
+         * Existing DELETE endpoint is preserved.
+         */
+        $('html').on('click', '#delete-button', function () {
+            divisionId = $(this).attr('data-id');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you want to change the status of this division?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#315cce',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, continue',
+                cancelButtonText: 'Cancel'
+            }).then(function (result) {
+                if (!result.isConfirmed) {
+                    return;
+                }
+
+                $.ajax({
+                    type: 'DELETE',
+                    url: `/divisions/${divisionId}`,
+
+                    success: function (response) {
+                        Swal.fire({
+                            title: 'Status Updated',
+                            text: response.message,
+                            icon: 'success'
                         });
 
+                        dataTable.ajax.reload(null, false);
+                    },
+
+                    error: function (xhr) {
+                        handleError(xhr);
                     }
                 });
             });
-
         });
-    </script>
+
+        /**
+         * Reset forms after modal closure.
+         */
+        if (addModalElement) {
+            addModalElement.addEventListener('hidden.bs.modal', function () {
+                $('#add-form')[0]?.reset();
+            });
+        }
+
+        if (updateModalElement) {
+            updateModalElement.addEventListener('hidden.bs.modal', function () {
+                $('#update-form')[0]?.reset();
+                divisionId = null;
+            });
+        }
+    });
+</script>
 @endsection

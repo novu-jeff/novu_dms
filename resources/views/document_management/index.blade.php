@@ -1,265 +1,258 @@
 @extends('layouts.app')
 
-@section('title') Document Management @endsection
+
+@section('title', 'Document Management')
+@section('page-heading', 'Document Management')
 
 @section('content')
-    <!-- ========== title-wrapper start ========== -->
-    <div class="title-wrapper pt-30">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <div class="title mb-30">
-                    <h2>{{ __('Document Management') }}</h2>
+<div class="dm-page">
+
+    <div class="dm-intro">
+        <div>
+            <div class="dm-breadcrumb">Workspace / Documents</div>
+            <h2>Register a Document</h2>
+            <p>Enter the document details, assign its location, and upload the files.</p>
+        </div>
+
+        <div class="dm-required-note">
+            <span class="dm-required-star">*</span> Required fields
+        </div>
+    </div>
+
+    <form id="document_form"
+          action="{{ route('documents.store') }}"
+          method="POST"
+          enctype="multipart/form-data">
+        @csrf
+
+        <!-- Document details -->
+        <section class="dm-form-card">
+            <div class="dm-card-heading">
+                <div class="dm-heading-icon dm-blue">
+                    <i class="lni lni-files"></i>
+                </div>
+                <div>
+                    <h3>Document Information</h3>
+                    <p>Basic details to identify and describe the document.</p>
                 </div>
             </div>
-            <!-- end col -->
-        </div>
-        <!-- end row -->
-    </div>
-    <!-- ========== title-wrapper end ========== -->
 
-    <div class="card-styles">
-        <div class="card-style-3 mb-30">
-            <div class="card-content">
+            <div class="dm-form-grid">
+                <div class="dm-field dm-span-2">
+                    <label for="title">Document Title <span>*</span></label>
+                    <input type="text" class="form-control" name="title"
+                           id="title" value="{{ old('title') }}"
+                           placeholder="Enter document title" autofocus>
+                    <span id="title_error" class="text-error text-danger d-none"></span>
+                </div>
 
-                <form id="document_form" action="{{ route('documents.store') }}" enctype="multipart/form-data" method="POST">
-                    @csrf
+                <div class="dm-field">
+                    <label for="author">Author <span>*</span></label>
+                    <input type="text" class="form-control" name="author"
+                           id="author" value="{{ old('author') }}"
+                           placeholder="Enter author or originating office">
+                    <span id="author_error" class="text-error text-danger d-none"></span>
+                </div>
 
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="input-style-1">
-                                <label for="title">{{ __('Document Title') }}</label>
-                                <input type="text" class="form-control" name="title"
-                                       id="title"
-                                       value="" autofocus>
-                                <span id="title_error" class="text-error text-danger d-none" role="alert"></span>
-                            </div>
-                        </div>
+                <div class="dm-field">
+                    <label for="doc_date">Document Date <span>*</span></label>
+                    <input type="date" class="form-control" name="doc_date"
+                           id="doc_date" value="{{ old('doc_date') }}">
+                    <span id="doc_date_error" class="text-error text-danger d-none"></span>
+                </div>
 
-                        <div class="col-12">
-                            <div class="input-style-1">
-                                <label for="author">{{ __('Author') }}</label>
-                                <input type="text" class="form-control"
-                                       name="author"
-                                       id="author"
-                                       value="">
-                                <span id="author_error" class="text-error text-danger d-none" role="alert"></span>
-                            </div>
-                        </div>
-
-                        <div class="col-12">
-                            <div class="input-style-1">
-                                <label for="description">{{ __('Description') }}</label>
-                                <textarea type="text" class="form-control" name="description"
-                                    rows="3"
-                                    id="description"
-                                    value=""></textarea>
-                                <span id="description_error" class="text-error text-danger d-none" role="alert"></span>
-                            </div>
-                        </div>
-                        <!-- end col -->
-
-                        <div class="row">
-
-                            <div class="col-md-6">
-                                <div class="input-style-1">
-                                    <div class="select-style-1">
-                                        <label for="branch">{{ __('Branch') }}</label>
-                                        <div class="select-position">
-                                            <select name="branch" id="branch">
-                                                <option value="" selected disabled>Choose branch</option>
-                                                @forelse($branches as $branch)
-                                                    <option value="{{ $branch->id }}">{{ $branch->description }}</option>
-                                                @empty
-                                                @endforelse
-                                            </select>
-                                        </div>
-                                        <span id="branch_error" class="text-error text-danger d-none" role="alert"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- end col -->
-                            <div class="col-md-6">
-                                <div class="input-style-1">
-                                    <div class="select-style-1">
-                                        <label for="department">{{ __('Department') }}</label>
-                                        <div class="select-position">
-                                            <select name="department" id="department">
-                                                <option value="">Choose department</option>
-                                            </select>
-                                        </div>
-                                        <span id="department_error" class="text-error text-danger d-none" role="alert"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- end col -->
-
-                        </div>
-
-                        <div class="row">
-
-                            <div class="col-md-6">
-                                <div class="input-style-1">
-                                    <div class="select-style-1">
-                                        <label for="division">{{ __('Division') }}</label>
-                                        <div class="select-position">
-                                            <select name="division" id="division">
-                                                <option value="">Choose division</option>
-                                            </select>
-                                        </div>
-                                        <span id="division_error" class="text-error text-danger d-none" role="alert"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- end col -->
-                            <div class="col-md-6">
-                                <div class="input-style-1">
-                                    <div class="select-style-1">
-                                        <label for="section">{{ __('Section') }}</label>
-                                        <div class="select-position">
-                                            <select name="section" id="section">
-                                                <option value="">Choose section</option>
-                                            </select>
-                                        </div>
-                                        <span id="section_error" class="text-error text-danger d-none" role="alert"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- end col -->
-                        </div>
-
-                        <div class="col-12 input-style-1">
-                            <label for="permission">{{ __('Document Permission') }}</label>
-                            <div class="col-12 d-flex">
-                                <div class="form-check radio-style mb-20 me-3">
-                                    <input class="form-check-input"
-                                           name="permission"
-                                           type="radio" value="1" id="radio-1">
-                                    <label class="form-check-label" for="radio-1">
-                                        Public</label>
-                                </div>
-
-                                <div class="form-check radio-style mb-20 me-3">
-                                    <input class="form-check-input"
-                                           name="permission" type="radio" value="2" id="radio-2">
-                                    <label class="form-check-label" for="radio-2">
-                                        Private</label>
-                                </div>
-
-                                <div class="form-check radio-style mb-20 me-3">
-                                    <input class="form-check-input"
-                                           name="permission" type="radio" value="3" id="radio-2">
-                                    <label class="form-check-label" for="radio-2">
-                                        Confidential</label>
-                                </div>
-                            </div>
-                            <span id="permission_error" class="text-error text-danger d-none" role="alert"></span>
-                        </div>
-
-                        <div class="col-12">
-                            <div class="input-style-1">
-                                <label for="tags">{{ __('Tags') }}</label>
-                                <input type="text" class="form-control" name="tags"
-                                       id="tags"
-                                       value="">
-                                <div id="tagsHelpBlock" class="form-text">
-                                    Indicate multiple tags by comma seperated values e.g. (tag1, tag2, tag3)
-                                </div>
-                                <span id="tags_error" class="text-error text-danger d-none" role="alert"></span>
-                            </div>
-                        </div>
-
-                        <div class="col-12 input-style-1">
-                            <label for="type">{{ __('Document Type') }}</label>
-                            <div class="col-12 d-flex">
-                                <div class="form-check radio-style mb-20 me-3">
-                                    <input class="form-check-input"
-                                           name="type"
-                                           type="radio" value="1" id="radio-4">
-                                    <label class="form-check-label" for="radio-4">
-                                        Committee Report</label>
-                                </div>
-
-                                <div class="form-check radio-style mb-20 me-3">
-                                    <input class="form-check-input"
-                                           name="type" type="radio" value="2" id="radio-5">
-                                    <label class="form-check-label" for="radio-5">
-                                        Resolution</label>
-                                </div>
-
-                                <div class="form-check radio-style mb-20 me-3">
-                                    <input class="form-check-input"
-                                           name="type" type="radio" value="3" id="radio-6">
-                                    <label class="form-check-label" for="radio-6">
-                                        Ordinance</label>
-                                </div>
-
-                                <div class="form-check radio-style mb-20 me-3">
-                                    <input class="form-check-input"
-                                           name="type" type="radio" value="4" id="radio-6">
-                                    <label class="form-check-label" for="radio-6">
-                                        Session Meeting</label>
-                                </div>
-
-                                <div class="form-check radio-style mb-20 me-3">
-                                    <input class="form-check-input"
-                                           name="type" type="radio" value="5" id="radio-6">
-                                    <label class="form-check-label" for="radio-6">
-                                        Executive Order</label>
-                                </div>
-                            </div>
-                            <span id="type_error" class="text-error text-danger d-none" role="alert"></span>
-                        </div>
-
-                            <div class="col-12">
-                                <div class="select-style-1">
-                                    <label for="folder">{{ __('Folder') }}</label>
-                                    <div class="select-position">
-                                        <select id="folder" name="folder">
-                                          <option disabled selected>Select folder</option>
-                                        </select>
-                                    </div>
-                                    <span id="folder_error" class="text-error text-danger d-none" role="alert"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12">
-                            <div class="input-style-1">
-                                <label for="file">{{ __('Document Date') }}</label>
-                                <input id="doc_date" type="date" class="form-control" name="doc_date"
-                                       value="">
-                                <span id="doc_date_error" class="text-error text-danger d-none" role="alert"></span>
-                            </div>
-                        </div>
-
-                        <div class="col-12">
-                            <div class="input-style-1">
-                                <label for="file">{{ __('Upload') }}</label>
-                                <input type="file" class="form-control" name="file[]"
-                                       id="file"
-                                       value="" multiple>
-                                <div id="fileHelpBlock" class="form-text">
-                                    Supported file formats e.g(jpeg, png, pdf, docx)
-                                </div>
-                                <span id="file_error" class="text-error text-danger d-none" role="alert"></span>
-                            </div>
-                        </div>
-
-                        <!-- end col -->
-                        <div class="col-12">
-                            <div class="button-group d-flex justify-content-center flex-wrap">
-                                <button id="submit-btn" type="submit" class="main-btn primary-btn btn-hover w-100 text-center">
-                                    {{ __('Submit') }}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-
+                <div class="dm-field dm-span-2">
+                    <label for="description">Description</label>
+                    <textarea class="form-control" name="description"
+                              id="description" rows="4"
+                              placeholder="Provide a short description of this document">{{ old('description') }}</textarea>
+                    <span id="description_error" class="text-error text-danger d-none"></span>
+                </div>
             </div>
+        </section>
+
+        <!-- Location and folder -->
+        <section class="dm-form-card">
+            <div class="dm-card-heading">
+                <div class="dm-heading-icon dm-green">
+                    <i class="lni lni-map-marker"></i>
+                </div>
+                <div>
+                    <h3>Document Location</h3>
+                    <p>Select the organizational location and destination folder.</p>
+                </div>
+            </div>
+
+            <div class="dm-form-grid">
+                <div class="dm-field">
+                    <label for="branch">Branch <span>*</span></label>
+                    <select name="branch" id="branch" class="form-select">
+                        <option value="" selected disabled>Choose branch</option>
+                        @foreach($branches as $branch)
+                            <option value="{{ $branch->id }}"
+                                {{ old('branch') == $branch->id ? 'selected' : '' }}>
+                                {{ $branch->description }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <span id="branch_error" class="text-error text-danger d-none"></span>
+                </div>
+
+                <div class="dm-field">
+                    <label for="department">Department <span>*</span></label>
+                    <select name="department" id="department" class="form-select">
+                        <option value="">Choose department</option>
+                    </select>
+                    <span id="department_error" class="text-error text-danger d-none"></span>
+                </div>
+
+                <div class="dm-field">
+                    <label for="division">Division <span>*</span></label>
+                    <select name="division" id="division" class="form-select">
+                        <option value="">Choose division</option>
+                    </select>
+                    <span id="division_error" class="text-error text-danger d-none"></span>
+                </div>
+
+                <div class="dm-field">
+                    <label for="section">Section <span>*</span></label>
+                    <select name="section" id="section" class="form-select">
+                        <option value="">Choose section</option>
+                    </select>
+                    <span id="section_error" class="text-error text-danger d-none"></span>
+                </div>
+
+                <div class="dm-field dm-span-2">
+                    <label for="folder">Destination Folder <span>*</span></label>
+                    <select id="folder" name="folder" class="form-select">
+                        <option value="" selected disabled>Select folder</option>
+                    </select>
+                    <span id="folder_error" class="text-error text-danger d-none"></span>
+                    <small class="dm-help">Available folders depend on the selected location.</small>
+                </div>
+            </div>
+        </section>
+
+        <!-- Classification -->
+        <section class="dm-form-card">
+            <div class="dm-card-heading">
+                <div class="dm-heading-icon dm-purple">
+                    <i class="lni lni-shield"></i>
+                </div>
+                <div>
+                    <h3>Classification and Access</h3>
+                    <p>Set the document category, access level, and search tags.</p>
+                </div>
+            </div>
+
+            <div class="dm-field">
+                <label>Document Permission <span>*</span></label>
+                <div class="dm-choice-grid">
+                    <label class="dm-choice" for="permission-public">
+                        <input type="radio" name="permission" value="1"
+                               id="permission-public">
+                        <span class="dm-choice-content">
+                            <strong>Public</strong>
+                            <small>Accessible according to system permissions.</small>
+                        </span>
+                    </label>
+
+                    <label class="dm-choice" for="permission-private">
+                        <input type="radio" name="permission" value="2"
+                               id="permission-private">
+                        <span class="dm-choice-content">
+                            <strong>Private</strong>
+                            <small>Restricted access.</small>
+                        </span>
+                    </label>
+
+                    <label class="dm-choice" for="permission-confidential">
+                        <input type="radio" name="permission" value="3"
+                               id="permission-confidential">
+                        <span class="dm-choice-content">
+                            <strong>Confidential</strong>
+                            <small>For sensitive information.</small>
+                        </span>
+                    </label>
+                </div>
+                <span id="permission_error" class="text-error text-danger d-none"></span>
+            </div>
+
+            <div class="dm-field dm-type-field">
+                <label>Document Type <span>*</span></label>
+                <div class="dm-type-grid">
+                    <label class="dm-type-option" for="type-committee">
+                        <input type="radio" name="type" value="1" id="type-committee">
+                        <span>Committee Report</span>
+                    </label>
+                    <label class="dm-type-option" for="type-resolution">
+                        <input type="radio" name="type" value="2" id="type-resolution">
+                        <span>Resolution</span>
+                    </label>
+                    <label class="dm-type-option" for="type-ordinance">
+                        <input type="radio" name="type" value="3" id="type-ordinance">
+                        <span>Ordinance</span>
+                    </label>
+                    <label class="dm-type-option" for="type-session">
+                        <input type="radio" name="type" value="4" id="type-session">
+                        <span>Session Meeting</span>
+                    </label>
+                    <label class="dm-type-option" for="type-executive">
+                        <input type="radio" name="type" value="5" id="type-executive">
+                        <span>Executive Order</span>
+                    </label>
+                </div>
+                <span id="type_error" class="text-error text-danger d-none"></span>
+            </div>
+
+            <div class="dm-field dm-tags-field">
+                <label for="tags">Tags</label>
+                <input type="text" class="form-control" name="tags"
+                       id="tags" value="{{ old('tags') }}"
+                       placeholder="e.g. finance, resolution, 2026">
+                <small class="dm-help">Separate multiple tags with commas.</small>
+                <span id="tags_error" class="text-error text-danger d-none"></span>
+            </div>
+        </section>
+
+        <!-- File upload -->
+        <section class="dm-form-card">
+            <div class="dm-card-heading">
+                <div class="dm-heading-icon dm-orange">
+                    <i class="lni lni-cloud-upload"></i>
+                </div>
+                <div>
+                    <h3>Upload Files</h3>
+                    <p>Attach the digital files associated with this document.</p>
+                </div>
+            </div>
+
+            <div class="dm-upload-area">
+                <div class="dm-upload-icon">
+                    <i class="lni lni-upload"></i>
+                </div>
+                <label for="file">Choose document files <span>*</span></label>
+                <p>Choose one or more files from your device.</p>
+                <input type="file" class="form-control" name="file[]"
+                       id="file" multiple accept=".jpeg,.jpg,.png,.pdf,.docx">
+                <small class="dm-help">Supported formats: JPEG, PNG, PDF, DOCX.</small>
+                <span id="file_error" class="text-error text-danger d-none"></span>
+                <div id="dm-selected-files" class="dm-selected-files"></div>
+            </div>
+        </section>
+
+        <!-- Actions -->
+        <div class="dm-form-actions">
+            <p><span class="dm-required-star">*</span> Please complete all required fields.</p>
+            <button id="submit-btn" type="submit" class="dm-submit-btn">
+                <i class="lni lni-checkmark-circle"></i>
+                <span>Register Document</span>
+            </button>
         </div>
-    </div>
+    </form>
+</div>
 @endsection
+
 @section('scripts')
 <script>
     $(document).ready(function () {

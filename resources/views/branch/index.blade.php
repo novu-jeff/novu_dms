@@ -1,230 +1,310 @@
+
 @extends('layouts.app')
 
-@section('title') Branch @endsection
+@section('title', 'Branch Management')
 
 @section('content')
-    <!-- ========== title-wrapper start ========== -->
-    <div class="title-wrapper pt-30">
-        <div class="breadcrumb-wrapper">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="#">Location Management</a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">
-                        Branch
-                    </li>
-                </ol>
-            </nav>
-        </div>
+<div class="fm-page">
 
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <div class="title mb-30">
-                    <h2>{{ __('Branch Management') }}</h2>
+    {{-- Page heading --}}
+    <div class="fm-page-header">
+        <div>
+            <div class="fm-breadcrumb">
+                <a href="{{ route('dashboard') }}">Dashboard</a>
+                <i class="lni lni-chevron-right"></i>
+                <span>Location Management</span>
+                <i class="lni lni-chevron-right"></i>
+                <span class="fm-breadcrumb-active">Branch</span>
+            </div>
+
+            <div class="fm-heading-title">
+                <div class="fm-heading-icon">
+                    <i class="lni lni-apartment"></i>
+                </div>
+                <div>
+                    <h2>Branch Management</h2>
+                    <p>Manage organizational branches and their status.</p>
                 </div>
             </div>
+        </div>
+
+        <button type="button"
+                class="fm-create-btn"
+                data-bs-toggle="modal"
+                data-bs-target="#addModal">
+            <i class="lni lni-plus"></i>
+            <span>Add Branch</span>
+        </button>
+    </div>
+
+    {{-- Branch table --}}
+    <div class="fm-card">
+
+        <div class="fm-card-header">
             <div>
-                <!-- Button trigger modal -->
-                <button type="button" class="main-btn primary-btn btn-hover w-100 text-center btn-sm" data-bs-toggle="modal" data-bs-target="#addModal">
-                    Add
-                    <span class="fs-5">+</span>
-                </button>
+                <h5>Branches</h5>
+                <p>View and manage registered branches.</p>
             </div>
-            <!-- end col -->
-        </div>
-        <!-- end row -->
-    </div>
-    <!-- ========== title-wrapper end ========== -->
 
-    <div class="tables-wrapper">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card-style mb-30">
-                    <div class="table-responsive">
-                        <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
-                            <div class="dataTable-container">
-                                <table id="table" class="table dataTable-table">
-                                    <thead>
-                                    <tr>
-                                        <th><h6>No.</h6></th>
-                                        <th><h6>Description</h6></th>
-                                        <th><h6>Added Date</h6></th>
-                                        <th><h6>Status</h6></th>
-                                        <th><h6>Action</h6></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- end card -->
+            <div class="fm-card-header-icon">
+                <i class="lni lni-list"></i>
             </div>
-            <!-- end col -->
         </div>
-        <!-- end row -->
-    </div>
 
-    @include('branch.modals.create')
-    @include('branch.modals.edit')
+        <div class="fm-table-container">
+            <table id="table" class="table fm-table align-middle w-100">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Branch Description</th>
+                        <th>Added Date</th>
+                        <th>Status</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div class="fm-card-footer">
+            <span>
+                <i class="lni lni-information"></i>
+                Use the action buttons to edit a branch or change its status.
+            </span>
+        </div>
+
+    </div>
+</div>
+
+@include('branch.modals.create')
+@include('branch.modals.edit')
 @endsection
+
 @section('scripts')
-    <script>
-        $(document).ready(function () {
+<script>
+$(document).ready(function () {
 
-            let dataTable = $('#table').DataTable({
-                ajax: {
-                    processing: true,
-                    serverSide: true,
-                    url: '/branches',
-                    type: 'GET',
-                    "order": [[1,'desc']]
-                },
-                columns: [
-                    { data: 'DT_RowIndex', name: 'DT_RowIndex', searchable: false, orderable: true },
-                    { data: 'description', name: 'description' },
-                    { data: 'created_at', name: 'created_at' },
-                    { data: 'status', name: 'status', searchable: false, orderable: false },
-                    { data: 'actions', searchable: false, orderable: false },
-                ]
-            });
-
-            const handleError = (xhr) => {
-                if(xhr.status === 422) {
-                    let errorsHtml = "<ul>";
-                    $.each(xhr.responseJSON.errors, function (key, value) {
-                        errorsHtml += "<li>" + value[0] + "</li>";
-                    });
-
-                    Swal.fire({
-                        icon: "warning",
-                        title: "Oops...",
-                        html: errorsHtml,
-                    });
-                } else {
-                    console.error(xhr.responseJSON)
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: "Server Error: Something went wrong!",
-                    });
+    const dataTable = $('#table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '/branches',
+            type: 'GET'
+        },
+        order: [[1, 'asc']],
+        columns: [
+            {
+                data: 'DT_RowIndex',
+                name: 'DT_RowIndex',
+                searchable: false,
+                orderable: false
+            },
+            {
+                data: 'description',
+                name: 'description',
+                render: function (data) {
+                    return `
+                        <div class="fm-name-cell">
+                            <div class="fm-name-icon">
+                                <i class="lni lni-apartment"></i>
+                            </div>
+                            <span>${escapeHtml(data ?? '')}</span>
+                        </div>
+                    `;
                 }
+            },
+            {
+                data: 'created_at',
+                name: 'created_at'
+            },
+            {
+                data: 'status',
+                name: 'status',
+                searchable: false,
+                orderable: false
+            },
+            {
+                data: 'actions',
+                name: 'actions',
+                searchable: false,
+                orderable: false,
+                className: 'text-center'
             }
+        ],
+        language: {
+            search: '',
+            searchPlaceholder: 'Search branches...',
+            lengthMenu: 'Show _MENU_ entries',
+            emptyTable: 'No branches found',
+            zeroRecords: 'No matching branches found',
+            processing: 'Loading branches...'
+        },
+        drawCallback: function () {
+            $('#table').addClass('fm-table-ready');
+        }
+    });
 
-            let addModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addModal'));
+    function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, function (char) {
+            return {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            }[char];
+        });
+    }
 
-            let updateModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('updateModal'));
+    const handleError = (xhr) => {
+        if (xhr.status === 422 && xhr.responseJSON?.errors) {
+            let errorsHtml = '<ul class="text-start mb-0">';
 
-            // Ajax
-            // Add record
-            $('#add-form-submit').click(function () {
-                // Serialize the form data
-                var formData = $('#add-form').serialize();
-
-                // Perform the Ajax request
-                $.ajax({
-                    type: 'POST',
-                    url: '/branches',
-                    data: formData,
-                    success: function (response) {
-                        Swal.fire({
-                            title: "Success!",
-                            text: response.message,
-                            icon: "success"
-                        });
-                        addModal.hide();
-                        $('#add-form')[0].reset();
-                        dataTable.ajax.reload();
-                    },
-                    error: function (xhr) {
-                        handleError(xhr);
-                    }
-                });
+            $.each(xhr.responseJSON.errors, function (key, value) {
+                errorsHtml += '<li>' + escapeHtml(value[0]) + '</li>';
             });
 
-            let branchId;
+            errorsHtml += '</ul>';
 
-            $('html').on('click', '#edit-button', function () {
-
-                branchId = $(this).attr('data-id');
-
-                $.ajax({
-                    type: 'GET',
-                    url: `/branches/${branchId}`,
-                    success: function (response) {
-                        $('#update-form #description').val(response.description);
-                    },
-                    error: function (xhr) {
-                        handleError(xhr);
-                    }
-                });
+            Swal.fire({
+                icon: 'warning',
+                title: 'Please check your input',
+                html: errorsHtml
             });
+        } else {
+            console.error(xhr.responseJSON || xhr.responseText);
 
-            $('#update-form-submit').click(function () {
-                // Serialize the form data
-                var formData = $('#update-form').serialize() + '&_method=PUT';
-
-                // Perform the Ajax request
-                $.ajax({
-                    type: 'POST',
-                    url: '/branches/' + branchId,
-                    data: formData,
-                    success: function (response) {
-                        Swal.fire({
-                            title: "Success!",
-                            text: response.message,
-                            icon: "success"
-                        });
-                        updateModal.hide();
-                        $('#update-form')[0].reset();
-                        dataTable.ajax.reload();
-                    },
-                    error: function (xhr) {
-                        handleError(xhr);
-                    }
-                });
+            Swal.fire({
+                icon: 'error',
+                title: 'Something went wrong',
+                text: xhr.responseJSON?.message ||
+                    'Unable to complete the request. Please try again.'
             });
+        }
+    };
 
-            // Delete record
-            $('html').on('click', '#delete-button', function () {
+    const addModal = bootstrap.Modal.getOrCreateInstance(
+        document.getElementById('addModal')
+    );
 
-                branchId = $(this).attr('data-id');
+    const updateModal = bootstrap.Modal.getOrCreateInstance(
+        document.getElementById('updateModal')
+    );
+
+    // Reset the Add form when opening the modal.
+    $('#addModal').on('show.bs.modal', function () {
+        $('#add-form')[0].reset();
+    });
+
+    // Add branch.
+    $('#add-form-submit').on('click', function () {
+        const form = $('#add-form')[0];
+
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '/branches',
+            data: $('#add-form').serialize(),
+            success: function (response) {
+                addModal.hide();
+                form.reset();
+                dataTable.ajax.reload(null, false);
 
                 Swal.fire({
-                    title: "Are you sure?",
-                    text: "Please confirm to change the status!",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#3085d6",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Yes, do it!"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Perform delete request
-                        $.ajax({
-                            type: 'DELETE',
-                            url: '/branches/' + branchId, // Change the URL to match your Laravel route
-                            success: function (response) {
-                                Swal.fire({
-                                    title: "Success!",
-                                    text: response.message,
-                                    icon: "success"
-                                });
-                                addModal.hide();
-                                $('#update-form')[0].reset();
-                                dataTable.ajax.reload();
-                            },
-                            error: function (xhr) {
-                                chandleError(xhr);
-                            }
-                        });
-
-                    }
+                    title: 'Success!',
+                    text: response.message,
+                    icon: 'success'
                 });
-            });
-
+            },
+            error: handleError
         });
-    </script>
+    });
+
+    let branchId = null;
+
+    // Load branch details into the Edit modal.
+    $('html').on('click', '#edit-button', function () {
+        branchId = $(this).attr('data-id');
+
+        $.ajax({
+            type: 'GET',
+            url: '/branches/' + branchId,
+            success: function (response) {
+                $('#update-form #description').val(response.description);
+            },
+            error: handleError
+        });
+    });
+
+    // Update branch.
+    $('#update-form-submit').on('click', function () {
+        const form = $('#update-form')[0];
+
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        const formData = $('#update-form').serialize() + '&_method=PUT';
+
+        $.ajax({
+            type: 'POST',
+            url: '/branches/' + branchId,
+            data: formData,
+            success: function (response) {
+                updateModal.hide();
+                form.reset();
+                dataTable.ajax.reload(null, false);
+
+                Swal.fire({
+                    title: 'Success!',
+                    text: response.message,
+                    icon: 'success'
+                });
+            },
+            error: handleError
+        });
+    });
+
+    // Delete or restore branch.
+    $('html').on('click', '#delete-button', function () {
+        branchId = $(this).attr('data-id');
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This will change the branch status.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#315cce',
+            cancelButtonColor: '#98a2b3',
+            confirmButtonText: 'Yes, continue',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (!result.isConfirmed) {
+                return;
+            }
+
+            $.ajax({
+                type: 'DELETE',
+                url: '/branches/' + branchId,
+                success: function (response) {
+                    dataTable.ajax.reload(null, false);
+
+                    Swal.fire({
+                        title: 'Success!',
+                        text: response.message,
+                        icon: 'success'
+                    });
+                },
+                error: handleError
+            });
+        });
+    });
+
+});
+</script>
 @endsection

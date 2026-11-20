@@ -14,6 +14,9 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WhitepaperController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\OrganizationSettingController;
+use App\Http\Controllers\Auth\LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +34,9 @@ Route::get('/whitepaper', [WhitepaperController::class, 'index'])->name('whitepa
 Route::get('/', function () {
     return view('auth.login');
 });
+
+Route::post('/logout', [LoginController::class, 'logout'])
+    ->name('logout');
 
 Route::get('/get-folder-by-location', [FolderController::class, 'getFolderByLocation'])->name('getFolderByLocation');
 
@@ -51,6 +57,7 @@ Route::prefix('api')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::view('about', 'about')->name('about');
 
     Route::get('users', [UserController::class, 'index'])->name('users.index');
@@ -83,3 +90,29 @@ Route::middleware('auth')->group(function () {
     // Files
     Route::resource('files', FileController::class)->except(['index', 'create', 'edit']);
 });
+
+
+
+
+Route::middleware(['auth'])->prefix('settings')->name('settings.')->group(function () {
+    Route::get('/organization', [
+        OrganizationSettingController::class,
+        'edit',
+    ])->name('organization.edit');
+
+    Route::put('/organization', [
+        OrganizationSettingController::class,
+        'update',
+    ])->name('organization.update');
+
+    Route::delete('/organization/logo', [
+        OrganizationSettingController::class,
+        'removeOrganizationLogo',
+    ])->name('organization.logo.remove');
+
+    Route::delete('/organization/system-logo', [
+        OrganizationSettingController::class,
+        'removeSystemLogo',
+    ])->name('organization.system-logo.remove');
+});
+

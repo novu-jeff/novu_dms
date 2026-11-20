@@ -1,169 +1,326 @@
 @extends('layouts.app')
 
-@section('title') Document Finder @endsection
+@section('title', 'Document Finder')
+@section('page-heading', 'Document Finder')
 
 @section('content')
     <!-- ========== title-wrapper start ========== -->
-    <div class="title-wrapper pt-30">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <div class="title mb-30">
-                    <h2>{{ __('Document Finder') }}</h2>
+    <div class="df-page">
+    <div class="df-page-header">
+        <div>
+            <div class="df-eyebrow">WORKSPACE / DOCUMENTS</div>
+            <h2>Document Finder</h2>
+            <p>Search, access, and manage documents in your repository.</p>
+        </div>
+    </div>
+
+    <div class="df-search-card">
+        <form action="{{ route('document_finder.index') }}" method="GET">
+            <label for="search" class="df-search-label">Search documents</label>
+
+            <div class="df-search-row">
+                <div class="df-search-input-wrap">
+                    <i class="lni lni-search-alt"></i>
+                    <input
+                        type="text"
+                        name="search"
+                        id="search"
+                        value="{{ request('search') }}"
+                        class="form-control @error('search') is-invalid @enderror"
+                        placeholder="Search by title, author, tags..."
+                    >
                 </div>
-            </div>
-            <!-- end col -->
-        </div>
-        <!-- end row -->
-    </div>
-    <!-- ========== title-wrapper end ========== -->
 
-    <div class="card-styles">
-        <div class="card-style-3 mb-30">
-            <div class="card-content">
-                <form action="{{ route('document_finder.index') }}">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="input-style-1">
-                                <label for="search">{{ __('Search') }}</label>
-                                <input type="text" @error('search') class="form-control is-invalid" @enderror name="search"
-                                       id="search"
-                                       value="">
-                                <div id="tagsHelpBlock" class="form-text">
-                                    (Tags, Title, Author, etc.)
-                                </div>
-                                @error('search')
-                                <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="button-group d-flex justify-content-center flex-wrap">
-                                <button type="submit" class="main-btn primary-btn btn-hover w-100 text-center">
-                                    {{ __('Submit') }}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+                <button type="submit" class="df-search-button">
+                    <i class="lni lni-search-alt"></i>
+                    Search
+                </button>
+
+                @if(request('search'))
+                    <a href="{{ route('document_finder.index') }}"
+                       class="df-clear-button">Clear</a>
+                @endif
             </div>
+
+            @error('search')
+                <span class="invalid-feedback d-block" role="alert">
+                    {{ $message }}
+                </span>
+            @enderror
+        </form>
+    </div>
+
+    <div class="df-results-heading">
+        <div>
+            <h3>Document Repository</h3>
+            <p>
+                @if(request('search'))
+                    Results for <strong>{{ request('search') }}</strong>
+                @else
+                    Browse available document records
+                @endif
+            </p>
         </div>
     </div>
 
-    @if(request()->input('search'))
-        <p class="mb-3">Results for <i>{{ request()->input('search') }}</i></p>
-    @else
-        <p class="mb-3">Showing all results</p>
-    @endif
-
+   
+<div class="fm-document-results">
     @forelse($documents as $doc)
-        <div class="card-styles">
-            <div class="card-style-3 mb-30">
-                <div class="card-content">
-                    <div class="d-flex justify-content-between">
-                        <div class="content">
-                            <h4>{{ $doc->title }}</h4>
-                            <p>Author: {{ $doc->author }}</p>
-                            <div class="mb-3">{{ \Illuminate\Support\Carbon::parse($doc->created_at)->format('Y-m-d') }}</div>
-                            <p>Document Permission: <span id="document-access-{{ $doc->id }}">
-                                {!! ($doc->document_access == 1 ? '<span class="main-badge success-badge">Public</span>' : ($doc->document_access == 2 ? '<span class="main-badge primary-badge">Private</span>' : '<span class="main-badge warning-badge">Confidential</span>')) !!}</span>
-                            </p>
-                            @foreach ($doc->files as $file)
-                            <form id="download-form-{{$doc->id}}-{{ $file->id }}" action="{{ route('document_finder.download', $doc->id) }}" method="post">
-                                @csrf
-                                <input name="document" type="hidden" value="{{ $doc->id }}">
-                                <input name="file_id" type="hidden" value="{{ $file->id }}">
-                                <input name="filename" type="hidden" value="{{ $file->file_name }}">
-                                <div class="d-flex align-items-end gap-3">
-                                    <a class="text-uppercase" href="#!" onclick="document.getElementById('download-form-{{ $doc->id }}-{{ $file->id }}').submit()">{{ $file->file_name }}@if(($file->file_version ?? 1) > 1) (v{{ $file->file_version }})@endif</a>
-                                </div>
-                            </form>
-                            @endforeach
-                        </div>
-                        <div class="dropdown">
-                            <a class="btn btn-light dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                              Action
-                            </a>
+        <article class="fm-document-card" id="document-{{ $doc->id }}">
 
-                            <ul class="dropdown-menu">
-                              <li><a id="edit-document-btn" class="dropdown-item" data-id="{{ $doc->id }}" href="#!" data-bs-toggle="modal" data-bs-target="#editModal"><?xml version="1.0" encoding="utf-8"?>
-                                <!-- Generator: Adobe Illustrator 22.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-                                <svg fill="#1C2033" width="16" height="16" version="1.1" id="lni_lni-pencil" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
-                                     y="0px" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64;" xml:space="preserve">
-                                <path d="M61.2,13c-3.2-3.4-6.6-6.8-10-10.1c-0.7-0.7-1.5-1.1-2.4-1.1c-0.9,0-1.8,0.3-2.4,1L8.7,40.2c-0.6,0.6-1,1.3-1.3,2L1.9,59
-                                    c-0.3,0.8-0.1,1.6,0.3,2.2c0.5,0.6,1.2,1,2.1,1h0.4l17.1-5.7c0.8-0.3,1.5-0.7,2-1.3l37.5-37.4c0.6-0.6,1-1.5,1-2.4
-                                    S61.9,13.7,61.2,13z M20.6,52.1c-0.1,0.1-0.2,0.1-0.3,0.2L7.4,56.6l4.3-12.9c0-0.1,0.1-0.2,0.2-0.3L39.4,16l8.7,8.7L20.6,52.1z
-                                     M51.2,21.5l-8.7-8.7l6.1-6.1c2.9,2.8,5.8,5.8,8.6,8.7L51.2,21.5z"/>
-                                </svg>
-                                Edit</a></li>
-                              <li><a id="change-permission-btn" class="dropdown-item" data-id="{{ $doc->id }}" href="#!" data-bs-toggle="modal" data-bs-target="#exampleModal"><?xml version="1.0" encoding="utf-8"?>
-                                <!-- Generator: Adobe Illustrator 22.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-                                <svg fill="#1C2033" width="16" height="16" version="1.1" id="lni_lni-unlock" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
-                                     y="0px" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64;" xml:space="preserve">
-                                <g>
-                                    <path d="M50.4,21.9h-6.1v-7.4c0-6.8-5.5-12.3-12.3-12.3S19.8,7.7,19.8,14.5c0,1.2,1,2.3,2.3,2.3s2.3-1,2.3-2.3
-                                        c0-4.3,3.5-7.8,7.8-7.8s7.8,3.5,7.8,7.8v7.4H13.6c-3.8,0-6.9,3-6.9,6.6V43c0,10.3,8.9,18.7,19.8,18.7h11c10.9,0,19.7-8.5,19.7-19
-                                        V28.5C57.3,24.9,54.2,21.9,50.4,21.9z M52.8,42.7c0,8-6.8,14.5-15.2,14.5h-11c-8.4,0-15.3-6.4-15.3-14.2V28.5
-                                        c0-1.2,1.1-2.1,2.4-2.1h36.7c1.3,0,2.4,0.9,2.4,2.1V42.7z"/>
-                                    <path d="M36.1,39.4h-8.2c-1.8,0-3.3,1.5-3.3,3.3v8.2c0,1.8,1.5,3.3,3.3,3.3h8.2c1.8,0,3.3-1.5,3.3-3.3v-8.2
-                                        C39.4,40.9,37.9,39.4,36.1,39.4z M34.9,49.6h-5.7v-5.7h5.7V49.6z"/>
-                                </g>
-                                </svg>
-                                Change Permission</a></li>
-                                <li><a id="manage-files-btn" class="dropdown-item" data-document-id="{{ $doc->id }}" data-folder-id="{{ $doc->folder_id }}" data-id="{{ $doc->id }}" href="#!" data-bs-toggle="modal" data-bs-target="#manage-files-modal"><?xml version="1.0" encoding="utf-8"?>
-                                    <!-- Generator: Adobe Illustrator 22.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"  width="16" height="16">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                                      </svg>
+            <!-- Document Header -->
+            <div class="fm-document-card-header">
+                <div class="fm-document-heading">
+                    <div class="fm-document-icon">
+                        <i class="lni lni-files" aria-hidden="true"></i>
+                    </div>
 
-                                    Manage Files</a></li>
-                            </ul>
+                    <div class="fm-document-heading-content">
+                        <h4 class="fm-document-title">
+                            {{ $doc->title }}
+                        </h4>
+
+                        <div class="fm-document-meta">
+                            <span>
+                                <i class="lni lni-user" aria-hidden="true"></i>
+                                {{ $doc->author ?: 'Unknown author' }}
+                            </span>
+
+                            <span class="fm-document-meta-divider"></span>
+
+                            <span>
+                                <i class="lni lni-calendar" aria-hidden="true"></i>
+                                {{ \Illuminate\Support\Carbon::parse($doc->created_at)->format('M d, Y') }}
+                            </span>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    @empty
-        <div class="card-styles">
-            <div class="card-style-3 mb-30">
-                <div class="card-content">
-                    <p>No results found</p>
+
+                <!-- Actions -->
+                <div class="dropdown fm-document-actions">
+                    <button
+                        class="fm-document-action-toggle"
+                        type="button"
+                        id="document-actions-{{ $doc->id }}"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        aria-label="Actions for {{ $doc->title }}"
+                    >
+                        <i class="lni lni-more-alt" aria-hidden="true"></i>
+                    </button>
+
+                    <ul
+                        class="dropdown-menu dropdown-menu-end fm-document-action-menu"
+                        aria-labelledby="document-actions-{{ $doc->id }}"
+                    >
+                        <li>
+                            <a
+                                id="edit-document-btn"
+                                class="dropdown-item"
+                                data-id="{{ $doc->id }}"
+                                href="#!"
+                                data-bs-toggle="modal"
+                                data-bs-target="#editModal"
+                            >
+                                <i class="lni lni-pencil" aria-hidden="true"></i>
+                                Edit Document
+                            </a>
+                        </li>
+
+                        <li>
+                            <a
+                                id="change-permission-btn"
+                                class="dropdown-item"
+                                data-id="{{ $doc->id }}"
+                                href="#!"
+                                data-bs-toggle="modal"
+                                data-bs-target="#exampleModal"
+                            >
+                                <i class="lni lni-lock" aria-hidden="true"></i>
+                                Change Permission
+                            </a>
+                        </li>
+
+                        <li>
+                            <a
+                                id="manage-files-btn"
+                                class="dropdown-item"
+                                data-document-id="{{ $doc->id }}"
+                                data-folder-id="{{ $doc->folder_id }}"
+                                data-id="{{ $doc->id }}"
+                                href="#!"
+                                data-bs-toggle="modal"
+                                data-bs-target="#manage-files-modal"
+                            >
+                                <i class="lni lni-folder" aria-hidden="true"></i>
+                                Manage Files
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
+
+            <!-- Document Details -->
+            <div class="fm-document-card-body">
+                <div class="fm-document-access">
+                    <span class="fm-document-access-label">
+                        Access Level
+                    </span>
+
+                    <span id="document-access-{{ $doc->id }}">
+                        @if ($doc->document_access == 1)
+                            <span class="fm-access-badge fm-access-public">
+                                <i class="lni lni-world" aria-hidden="true"></i>
+                                Public
+                            </span>
+                        @elseif ($doc->document_access == 2)
+                            <span class="fm-access-badge fm-access-private">
+                                <i class="lni lni-lock" aria-hidden="true"></i>
+                                Private
+                            </span>
+                        @else
+                            <span class="fm-access-badge fm-access-confidential">
+                                <i class="lni lni-shield" aria-hidden="true"></i>
+                                Confidential
+                            </span>
+                        @endif
+                    </span>
+                </div>
+
+                <!-- Attachments -->
+                <div class="fm-document-files">
+                    <div class="fm-document-files-heading">
+                        <div>
+                            <h6>
+                                <i class="lni lni-paperclip" aria-hidden="true"></i>
+                                Attachments
+                            </h6>
+                            <p>Files associated with this document</p>
+                        </div>
+
+                        <span class="fm-document-file-count">
+                            {{ $doc->files->count() }}
+                            {{ $doc->files->count() === 1 ? 'file' : 'files' }}
+                        </span>
+                    </div>
+
+                    @forelse ($doc->files as $file)
+                        <form
+                            id="download-form-{{ $doc->id }}-{{ $file->id }}"
+                            action="{{ route('document_finder.download', $doc->id) }}"
+                            method="POST"
+                            class="fm-document-file-row"
+                        >
+                            @csrf
+
+                            <input name="document" type="hidden" value="{{ $doc->id }}">
+                            <input name="file_id" type="hidden" value="{{ $file->id }}">
+                            <input name="filename" type="hidden" value="{{ $file->file_name }}">
+
+                            <span class="fm-document-file-icon">
+                                <i class="lni lni-empty-file" aria-hidden="true"></i>
+                            </span>
+
+                            <span class="fm-document-file-info">
+                                <span class="fm-document-file-name">
+                                    {{ $file->file_name }}
+                                    @if (($file->file_version ?? 1) > 1)
+                                        <span class="fm-document-version">
+                                            v{{ $file->file_version }}
+                                        </span>
+                                    @endif
+                                </span>
+                                <span class="fm-document-file-hint">
+                                    Select to download
+                                </span>
+                            </span>
+
+                            <button
+                                type="submit"
+                                class="fm-document-download-btn"
+                                aria-label="Download {{ $file->file_name }}"
+                                title="Download file"
+                            >
+                                <i class="lni lni-download" aria-hidden="true"></i>
+                            </button>
+                        </form>
+                    @empty
+                        <div class="fm-document-no-files">
+                            <i class="lni lni-folder" aria-hidden="true"></i>
+                            <span>No files attached to this document.</span>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </article>
+
+    @empty
+        <!-- Empty State -->
+        <div class="fm-document-empty-state">
+            <div class="fm-document-empty-icon">
+                <i class="lni lni-search-alt" aria-hidden="true"></i>
+            </div>
+
+            <h5>No documents found</h5>
+            <p>
+                No documents match your search. Try a different keyword
+                or adjust your search criteria.
+            </p>
         </div>
     @endforelse
+</div>
 
-    <div class="my-3">
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-            <div class="d-flex align-items-center gap-2">
-                <label class="text-muted small mb-0">Show</label>
-                <form method="get" action="{{ route('document_finder.index') }}" class="d-flex align-items-center gap-2" id="per-page-form">
-                    @if(request('search'))
-                        <input type="hidden" name="search" value="{{ request('search') }}">
-                    @endif
-                    <select name="per_page" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
-                        @foreach([10, 25, 50, 100] as $n)
-                            <option value="{{ $n }}" {{ (int) request('per_page', 10) === $n ? 'selected' : '' }}>{{ $n }}</option>
-                        @endforeach
-                    </select>
-                    <span class="text-muted small">per page</span>
-                </form>
-            </div>
-            <div>
-                {{ $documents->links() }}
-            </div>
+<!-- Pagination Controls -->
+@if ($documents->count() || $documents->currentPage() > 1)
+    <div class="fm-document-pagination">
+        <div class="fm-document-pagination-size">
+            <label for="per_page" class="fm-document-pagination-label">
+                Show
+            </label>
+
+            <form
+                method="GET"
+                action="{{ route('document_finder.index') }}"
+                id="per-page-form"
+                class="fm-document-pagination-form"
+            >
+                @if (request('search'))
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                @endif
+
+                <select
+                    name="per_page"
+                    id="per_page"
+                    class="form-select fm-document-per-page"
+                    onchange="this.form.submit()"
+                >
+                    @foreach ([10, 25, 50, 100] as $n)
+                        <option
+                            value="{{ $n }}"
+                            {{ (int) request('per_page', 10) === $n ? 'selected' : '' }}
+                        >
+                            {{ $n }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <span class="fm-document-pagination-label">per page</span>
+            </form>
+        </div>
+
+        <div class="fm-document-pagination-links">
+            {{ $documents->appends(request()->except('page'))->links() }}
         </div>
     </div>
+@endif
+
 
     @include('document_finder.modals.change_permission')
     @include('document_finder.modals.edit')
     @include('document_finder.modals.manage_files')
     @include('document_finder.modals.update_file')
     @include('document_finder.modals.upload_file')
-
+ </div>   
 @endsection
 @section('scripts')
 <script>

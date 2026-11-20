@@ -26,5 +26,7 @@ class DatabaseSeeder extends Seeder
     		'email' => 'admin@dms.com',
     		'password' => Hash::make('password'), // <-- this hashes the password securely
 	]);
+
+        $this->call(DummyMediaSeeder::class);
     }
 }
